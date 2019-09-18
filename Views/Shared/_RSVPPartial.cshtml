@@ -8,40 +8,40 @@
                 Join us in our next class on Sunday 25 August 2019?
                 <br>
                 RSVP Here.
+                <button id="submit-rsvp"  class=".rsvp-ok" asp-action="Index" asp-controller="RSVP">Okay</button>
             </p>
-            <div>
+    </div>
+
+            <div class="rsvp-input-container">
                 @if(User.Identity.IsAuthenticated)
                 {
-                <button class="rsvp-ok" asp-action="Index" asp-controller="RSVP">Okay</button>
+                    @if(Model.PhoneNumber == null)
+                    {
+                        <fieldset >
+                            <legend align="center">RSVP</legend>
+                                <p>Please submit your phone number so we can contact you.</p>
+                                <form method="Post" id="rsvp-form">
+                                    <div>
+                                    <label for="PhoneNumber">Phone number</label>
+                                    <input asp-for="PhoneNumber" class="text-input" id="text-input-1" type="text" >
+                                    <span asp-validation-for="PhoneNumber"></span>
+                                    <button id="submit-rsvp" type="submit" class="btn">Submit</button>
+                                    </div> 
+                                </form> 
+                        </fieldset>
+
+                    }
+                    else
+                    {
+                        <p>Thanks for the RSVP Mr. @Model.FirstName. <br> See you on Sunday.</p>
+                    }
                 }
                 else
                 {
                 <a class="rsvp-ok" asp-action="Index" asp-controller="RSVP">what</a>
                 }
             </div>
-    </div>
-
         <div class="rsvp-input-container">
-            <fieldset >
-        <legend align="center">RSVP</legend>
-
-        @if(Model.PhoneNumber == null)
-        {
-            <p>Please submit your phone number so we can contact you.</p>
-            <form method="Post" id="rsvp-form">
-                <div>
-                <label for="PhoneNumber">Phone number</label>
-                <input asp-for="PhoneNumber" class="text-input" id="text-input-1" type="text" >
-                <span asp-validation-for="PhoneNumber"></span>
-                <button id="submit-rsvp" type="submit" class="btn">Submit</button>
-                </div> 
-            </form> 
-        }
-        else
-        {
-            <p>Thanks for the RSVP Mr. @Model.FirstName. <br> See you on Sunday.</p>
-        }
-        <fieldset>
     </div>
 
 </aside>

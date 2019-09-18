@@ -25,12 +25,12 @@
 -- CREATE DATABASE InspInt_Database;
 -- GO
 
--- SELECT *
--- FROM InspInt_Database.INFORMATION_SCHEMA.TABLES;
--- GO
 SELECT *
-FROM AspNetUserClaims;
+FROM InspInt_Database.INFORMATION_SCHEMA.TABLES;
 GO
+-- SELECT *
+-- FROM AspNetUserClaims;
+-- GO
 -- SELECT *
 -- FROM INFORMATION_SCHEMA.TABLES
 

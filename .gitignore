@@ -4,3 +4,4 @@ browsersync-update.txt
 Logs.txt
 *.db
 *.dll
+obj/

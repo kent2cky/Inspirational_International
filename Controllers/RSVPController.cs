@@ -42,9 +42,10 @@ namespace Inspiration_International.Controllers
         }
 
         [HttpPost]
-        public async Task<JsonResult> SubmitRSVP([FromBody]RSVPViewModel model)
+        public async Task<IActionResult> SubmitRSVP([FromBody]RSVPViewModel model = null)
         {
             _logger.LogCritical("RSVPSubmit Hit!!!!\n\n\n\n\n");
+
 
             if (ModelState.IsValid)
             {
@@ -56,14 +57,15 @@ namespace Inspiration_International.Controllers
                 if (v != 0)
                 {
                     _logger.LogError("RSVP submission not successful!!\n\n\n\n\n\n\n\n");
-                    return Json("Error");
+                    //throw()
                 }
                 _logger.LogInformation($"RSVP submitted successfully!!!\n\n\n\n\n\n\n\n");
-                return Json("Success");
+                string response = "RSVP submitted!!";
+                return Ok(response);
             }
 
 
-            return Json("Index");
+            return BadRequest(model);
 
         }
 

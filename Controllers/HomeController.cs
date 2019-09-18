@@ -34,8 +34,13 @@ namespace Inspiration_International.Controllers
             _signInManager = signInManager;
         }
 
+        public class Param
+        {
+            public string RSVP { get; set; }
+        }
+
         // [Authorize]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(Param RSVP = null)
         {
             try
             {
@@ -58,6 +63,7 @@ namespace Inspiration_International.Controllers
                 // {
                 //     Console.WriteLine($"{comment.CommentID} {comment.Name} said {comment.CommentBody} on {comment.DateTimePosted}\n");
                 // }
+
 
                 var model = new RSVPViewModel();
                 if (User.Identity.IsAuthenticated)

@@ -36,14 +36,24 @@ $("#submit-rsvp").click(function () {
   $.ajax({
     url: "/RSVP/SubmitRSVP",
     type: "POST",
-    dataType: "application/json; charset=utf-8",
-    data: payload,
+    dataType: "text",
     contentType: "application/json; charset=utf-8",
+    data: payload,
     processData: false,
-    success: function (result) {
-      console.log("from success. %0", JSON.stringify(result));
-      alert(result);
+    success: function (response) {
+      console.log("from success. %0", JSON.stringify(response));
+      alert(response);
+    },
+    error: function (response) {
+      console.log(response);
+      if (response.status == 401) {
+        console.log("Redirecting to login page......");
+        window.location.href = "/Identity/Account/Login?ReturnUrl=%2FHome?RSVP=true";
+        console.log(response.statusText);
+      }
+      console.log(response.responseText);
     }
+
   });
 
   console.error("Form submitted!");
