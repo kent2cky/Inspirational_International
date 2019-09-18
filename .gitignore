@@ -1,0 +1,6 @@
+appsettings.Development.json
+appsettings.json
+browsersync-update.txt
+Logs.txt
+*.db
+*.dll

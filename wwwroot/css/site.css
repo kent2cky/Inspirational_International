@@ -1,0 +1,420 @@
+﻿body {
+  /* Margin bottom by footer height */
+  width: 100vw;
+  display: flex;
+  flex-flow: row wrap;
+  margin: 0;
+  font-size: 14px;
+  font-family: 'Cairo', sans-serif;
+  color: #444;
+}
+
+/* Below are the properties that style the header element
+  and all the elements that lie within it. 
+*/
+
+header {
+  width: 100%;
+  display: flex;
+  padding: 21px 0px 20px 0px;
+  background: white;
+  margin-bottom: 4px;
+}
+
+.nav-container {
+  display: inline-block;
+  position: relative;
+  width: 100%;
+  padding: 0px 15px 0px 15px;
+  color: #098ee7ef;
+}
+
+.nav-item {
+  display: inline;
+}
+
+.nav_handle-container {
+
+  position: relative;
+  height: 31px;
+  top: 20px;
+  right: auto;
+  cursor: pointer;
+  float: right;
+  width: 39px;
+  border: none;
+  background: inherit;
+}
+
+.nav_handle-container>span {
+  background: #098ee7ef;
+  height: 4px;
+  width: 33px;
+  margin: 3px;
+  position: absolute;
+  /* Apparently this centres the spans. Leave it like that.*/
+  right: 3px;
+}
+
+.toggled {
+
+  padding: 0;
+  margin: 0;
+  display: none;
+
+}
+
+.toggled>ul {
+  text-align: left;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+}
+
+.nav-items-list>li {
+  padding: 10px;
+  margin: 1px;
+}
+
+#list,
+#list a {
+  position: relative;
+  color: #098ee7ef;
+}
+
+.nav-items-list>.primary {
+  background: #88cfebc0;
+}
+
+.nav_handle-container span:nth-child(1) {
+  top: 0;
+}
+
+.nav_handle-container span:nth-child(2) {
+  top: 10px;
+}
+
+.nav_handle-container span:nth-child(3) {
+  top: 20px;
+}
+
+.nav_handle-container span:hover {
+
+  background: #62b9f3ef;
+}
+
+header>.nav-item {
+  height: 5px;
+  display: none;
+}
+
+#insp_int_logo {
+  display: inline-flex;
+}
+
+.insp_int_logo-text {
+  display: flex;
+  flex-flow: row wrap;
+  width: 133px;
+  font-size: 15px;
+  padding-top: 9px;
+  color: #098ee7ef;
+}
+
+span.bold {
+  display: inline-block;
+  position: fixed;
+}
+
+.insp_int_logo {
+  display: inline-block;
+  width: 77px;
+  height: 72px;
+  background-image: url(../icons/icon1.jpeg);
+  background-repeat: no-repeat;
+  background-size: contain;
+  border-radius: 27px;
+}
+
+/* Below lies the styling for the page's main contents
+  it merely defines the outline for the main contents.
+  styling for the contents are contained in another
+  css file.  
+*/
+[align-centre] {
+  text-align: center;
+  background-color: #fff;
+  width: 100%;
+  padding: 2px 0;
+  display: inline-block;
+}
+
+.card {
+  display: inline-flex;
+  background: white;
+  height: 324px;
+  width: 100%;
+  flex-flow: row wrap;
+  max-width: 430px;
+  text-align: center;
+  line-height: 20px;
+  margin: 30px 7px 25px 6px;
+  justify-content: center;
+
+}
+
+.card a {
+  display: inline-block;
+  border-radius: 14px;
+  position: relative;
+  width: 203px;
+  height: 23px;
+  background: #f2f1f0;
+  color: inherit;
+  border: 1.5px solid #098ee7ef;
+  padding: 2px;
+  font-size: 16px;
+}
+
+.card a:hover,
+input.submit:hover,
+.btn:hover {
+  background: #098ee7ef;
+  color: white;
+}
+
+[card-container] {
+  display: flex;
+  width: inherit;
+  flex-flow: row wrap;
+  justify-content: center;
+  background: white;
+}
+
+.card img {
+  top: 10px;
+  position: relative;
+  display: block;
+}
+
+.main {
+  display: block;
+  width: 100vw;
+  background-color: lavender
+}
+
+main {
+  display: block;
+  width: 100vw;
+}
+
+aside {
+  display: block;
+}
+
+.rsvp-cover {
+  background: #098ee7ef;
+  position: relative;
+  color: white;
+  border: 1px solid blue;
+  padding: 50px 0 60px 0;
+  text-align: center;
+  width: 100%;
+}
+
+.rsvp-cover button {
+  border: 1px solid white;
+  background: #098ee7ef;
+  color: white;
+}
+
+.rsvp-input-container {
+  background: white;
+  border: 1px solid blue;
+  padding: 50px 0 60px 0;
+  display: none;
+  justify-content: center;
+}
+
+fieldset {
+  background: inherit;
+  border: 1px solid #098ee7ef;
+  padding: 40px 20px 50px 20px;
+  /* display: flex;
+  flex-flow: column wrap;
+  justify-content: center; */
+
+}
+
+fieldset>fieldset {
+  display: none;
+}
+
+legend {
+  color: inherit;
+  font-size: 15px;
+}
+
+
+
+.text-input {
+  display: block;
+  background: white;
+  border: 1px solid #098ee7ef;
+  margin: 4px 4px 4px 0;
+  height: 25px;
+  padding-left: 5px;
+}
+
+#text-input-1 {
+  left: 41px;
+}
+
+input.submit {
+  color: #098ee7ef;
+  border: 1px solid #098ee7ef;
+  padding: 5px;
+  position: relative;
+  right: 7px;
+}
+
+h1 {
+  margin: 0;
+}
+
+a {
+  text-decoration: none;
+}
+
+footer {
+  display: inline-block;
+  background: #098ee76c;
+  bottom: 0;
+  width: 100vw;
+  white-space: normal;
+  height: auto;
+  line-height: 16px;
+  /* Vertically center the text there */
+  padding: 10px;
+}
+
+footer .container {
+  text-align: center;
+}
+
+.accreditors_logos {
+  display: block;
+  flex-flow: row wrap;
+}
+
+.accreditors_logos span {
+  margin: 10px 2px;
+}
+
+.accreditors_logos span:nth-child(1) {
+  background-image: url("../icons/icon2.jpeg");
+  background-repeat: no-repeat;
+  background-size: contain;
+  display: inline-block;
+  width: 70px;
+  height: 72px;
+}
+
+.accreditors_logos span:nth-child(2) {
+  background-image: url("../icons/icon3.jpeg");
+  background-repeat: no-repeat;
+  background-size: contain;
+  display: inline-block;
+  width: 85px;
+  height: 72px;
+}
+
+.accreditors_logos span:nth-child(3) {
+  background-image: url("../icons/icon4.png");
+  background-repeat: no-repeat;
+  background-size: contain;
+  display: inline-block;
+  width: 107px;
+  height: 72px;
+}
+
+.accreditors_logos span:nth-child(4) {
+  background-image: url("../icons/icon5.jpeg");
+  background-repeat: no-repeat;
+  background-size: contain;
+  display: inline-block;
+  width: 70px;
+  height: 72px;
+}
+
+/* Styles for Authentication pages goes in here */
+
+.row {
+  padding: 10px;
+  background: white;
+  font-style: inherit;
+}
+
+.loginLabel {
+  text-align: center;
+  color: #444;
+}
+
+.btn {
+  color: #098ee7ef;
+  border: 1px solid #098ee7ef;
+  margin-top: 10px;
+  padding: 5px;
+  position: relative;
+  right: 7px;
+}
+
+
+
+
+
+
+
+
+/* Style overrides from very small screens goes in here */
+
+@media screen and (max-width: 300px) {}
+
+/* Style overrides for tabs goes in here */
+@media screen and (min-width: 750px) {
+  body {
+    font-size: 20px;
+  }
+
+  .nav-container {
+    display: inline-block;
+    position: relative;
+    width: 100%;
+    padding: 0px 55px 0px 55px;
+    color: #098ee7ef;
+  }
+
+  aside {
+    background: blue;
+    display: block;
+    flex-flow: row wrap;
+    width: 100vw;
+  }
+}
+
+/* Here lies the styles for the login page */
+.login-form-container {
+  background: white;
+  padding: 50px 0 60px 0;
+  display: flex;
+  justify-content: center;
+}
+
+.field-validation-error {
+  color: red;
+}
+
+#login-text-input-1 {
+  left: 53px;
+}

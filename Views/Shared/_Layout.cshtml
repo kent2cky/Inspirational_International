@@ -1,0 +1,116 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="google-signin-client_id" content="105963320750-cbb3s3nptm86skd9efcfjhm5ph2b7koc.apps.googleusercontent.com"/>
+    <title>@ViewData["Title"] - Inspiration International</title>
+
+    <environment include="Development">
+        <link href="https://fonts.googleapis.com/css?family=Cairo&display=swap" rel="stylesheet"> 
+    </environment>
+    <environment exclude="Development">
+        <link rel="stylesheet" href="~/css/site.css"
+              asp-fallback-href=""
+              asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute"
+              crossorigin="anonymous"
+              integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"/>
+        <link href="https://fonts.googleapis.com/css?family=Cairo&display=swap" rel="stylesheet"> 
+    </environment>
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+        <header>
+            <nav class="nav-container">
+                     <a id="insp_int_logo" asp-area="" asp-controller="Home" asp-action="Index">
+                    <span class="insp_int_logo nav-item"></span> 
+                    <b><span class="insp_int_logo-text"><span>INSPIRATION</span>INTERNATIONAL</span></b>
+                </a>
+                    <div class="nav_handle-container" type="button" aria-controls="navbarSupportedContent"
+                                    aria-expanded="false" aria-label="Toggle navigation">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                    </div>
+
+                <div class="toggled" role="Toggle navigation">
+                        <ul class="nav-items-list" id="list">
+                            <li class="primary">
+                                <a asp-area="" asp-controller="Home" asp-action="Index">HOME</a>
+                            </li>
+                            <li class="">
+                                <a asp-area="" asp-controller="Home" asp-action="Index">GET INSPIRED</a>
+                            </li>
+                            <li class="">
+                                <a asp-area="" asp-controller="Home" asp-action="Privacy">TESTIMONIALS</a>
+                            </li>
+                            @if(!User.Identity.IsAuthenticated)
+                            {
+                                <li class="">
+                                    <a asp-area="Identity" asp-page="/Account/Login">SIGN IN</a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="">
+                                    <a asp-area="Identity" asp-page="/Account/Logout">SIGN OUT</a>
+
+                                </li>
+                            }
+                            <li class="">
+                                <a asp-area="" asp-controller="Home" asp-action="Privacy">ABOUT</a>
+                            </li>
+                        </ul>
+                        <!-- <a id="nav-item search-button" class="right-aligned" asp-area="" asp-controller="Home" asp-action="Privacy">
+                        <img class="search-icon" src="~/loupe.svg" width="41" height="32">
+                        </a> -->
+                </div>
+            </nav>
+    </header>
+    <div class="ui main text container">
+        <partial name="_CookieConsentPartial" />
+        <main role="main" class="">
+            @RenderBody()
+        </main>
+           @RenderSection("RSVP", false)     
+    </div>
+
+    <footer>
+        <div class="container">
+            <span> <b>Accredited By</b> </span>
+                <div class="accreditors_logos">
+                <span name="Global Accreditation Center for Project Management logo" ></span>
+                <span name="National Council for Accreditation of Teacher Education logo" ></span>
+                <span name="Council on Social Work Education logo" ></span>
+                <span name="Accreditation Council for Business Schools and Programs logo" ></span>
+                </div>
+               &copy; Copyright 2019 - <a asp-controller="Home" asp-action="Index"> Inspiration International </a> by Coach Kenny. 
+        </div>
+    </footer>
+
+    <environment include="Development">
+        <script src="~/lib/jquery/dist/jquery.js"></script>
+        <script src="https://apis.google.com/js/platform.js" async defer></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"
+                asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
+                asp-fallback-test="window.jQuery"
+                crossorigin="anonymous"
+                integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=">
+        </script>
+        <script src="~/js/site.js"
+                asp-fallback-src="~/js/site.js"
+                asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal"
+                crossorigin="anonymous"
+                integrity="sha384-xrRywqdh3PHs8keKZN+8zzc5TX0GRTLCcmivcbNJWm2rs5C8PRhcEn3czEjhAO9o">
+        </script>
+    </environment>
+    @RenderSection("Scripts", required: false)
+    <script src="~/js/site.js" asp-append-version="true"></script>
+     <!-- <script id="__bs_script__">//<![CDATA[
+    document.write("<script async src='http://HOST:3000/browser-sync/browser-sync-client.js?v=2.26.7'><\/script>".replace("HOST", location.hostname));
+//]]></script> -->
+
+</body>
+</html>
