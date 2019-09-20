@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Inspiration_International.Identity;
 using Inspiration_International.Helpers;
+using Microsoft.AspNetCore.Http;
 
 namespace Inspiration_International.Controllers
 {
@@ -42,9 +43,12 @@ namespace Inspiration_International.Controllers
         }
 
         [HttpPost]
+        [HttpGet]
         public async Task<IActionResult> SubmitRSVP([FromBody]RSVPViewModel model = null)
         {
-            _logger.LogCritical("RSVPSubmit Hit!!!!\n\n\n\n\n");
+            _logger.LogCritical("RSVPSubmit Hit!!!!\n\n\n\n\n" +
+             model.RSVP + model.PhoneNumber + model.FirstName + model.PictureData);
+
 
 
             if (ModelState.IsValid)
@@ -65,8 +69,36 @@ namespace Inspiration_International.Controllers
             }
 
 
-            return BadRequest(model);
+            return RedirectToAction("Index", "Home");//BadRequest();//model);
 
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> SubmitRSVPs([FromQuery]string RSVP = null)
+        {
+            _logger.LogCritical("RSVPSubmit Hit!!!!\n\n\n\n\n" + RSVP);
+
+
+
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByEmailAsync(User.Identity.Name);
+                var date = DateTime.Now;
+                var dateOfSunday = date.Next(DayOfWeek.Sunday);
+                var v = await _rsvpRepo.SumbitRSVPAsync(dateOfSunday, user.PhoneNumber, user.FullName, 0);
+
+                if (v != 0)
+                {
+                    _logger.LogError("RSVP submission not successful!!\n\n\n\n\n\n\n\n");
+                    //throw()
+                }
+
+                HttpContext.Session.SetString("RSVP", RSVP);
+                return RedirectToAction("Index", "Home");
+            }
+
+
+            return BadRequest();
         }
 
         public IActionResult Privacy()

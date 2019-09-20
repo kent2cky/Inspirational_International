@@ -22,45 +22,90 @@ $(".rsvp-ok").click(function () {
   console.log("Show clicked!");
 });
 
-// Submit rsvp form
-$("#submit-rsvp").click(function () {
-  // Hide the form view
-  $(".rsvp-input-container").css("display", "none");
-  //Show the rsvp-cover view.
-  $(".rsvp-cover").show();
-  console.log("Submitting the form....");
-  var obj = $("#rsvp-form").serializeToJSON();
+$("#cancel-submit").click(
+  function () {
+    console.log("Cancel button clicked....");
+    alert("There would no way to contact you without your phone number")
+    $(".rsvp-cover>fieldset").replaceWith(
+      "Thanks for the RSVP. See you on Sunday."
+    );
+  }
+);
 
-  var payload = JSON.stringify(obj);
-
+// Submit RSVP
+$("#rsvp-click").click(function () {
+  var data = JSON.stringify({
+    RSVP: true,
+    PhoneNumber: 23456789123,
+    FirstName: " sdsds",
+    PictureData: "23456789123"
+  });
   $.ajax({
     url: "/RSVP/SubmitRSVP",
     type: "POST",
-    dataType: "text",
+    dataType: "html",
+    data: data,
     contentType: "application/json; charset=utf-8",
-    data: payload,
     processData: false,
     success: function (response) {
       console.log("from success. %0", JSON.stringify(response));
-      alert(response);
+      //alert(response);
+      $(".rsvp-cover>p").replaceWith(response);
     },
     error: function (response) {
       console.log(response);
+      $(".rsvp-cover").append(response.responseText);
       if (response.status == 401) {
         console.log("Redirecting to login page......");
-        window.location.href = "/Identity/Account/Login?ReturnUrl=%2FHome?RSVP=true";
+        window.location.href =
+          "/Identity/Account/Login?ReturnUrl=%2FRSVP%2FSubmitRSVPs?RSVP=true";
         console.log(response.statusText);
+      } else {
+        alert("Error sending your RSVP. Please try again later.");
       }
       console.log(response.responseText);
     }
-
   });
-
-  console.error("Form submitted!");
-
-  return;
 });
 
+// Submit rsvp form
+// $("#submit-rsvp").click(function () {
+//   // Hide the form view
+//   $(".rsvp-input-container").css("display", "none");
+//   //Show the rsvp-cover view.
+//   $(".rsvp-cover").show();
+//   console.log("Submitting the form....");
+//   var obj = $("#rsvp-form").serializeToJSON();
+
+//   var payload = JSON.stringify(obj);
+//   console.log(payload);
+
+//   $.ajax({
+//     url: "/RSVP/SubmitRSVP",
+//     type: "POST",
+//     dataType: "text",
+//     contentType: "application/json; charset=utf-8",
+//     data: payload,
+//     processData: false,
+//     success: function (response) {
+//       console.log("from success. %0", JSON.stringify(response));
+//       alert(response);
+//     },
+//     error: function (response) {
+//       console.log(response);
+//       if (response.status == 401) {
+//         console.log("Redirecting to login page......");
+//         //window.location.href = "/Identity/Account/Login?ReturnUrl=%2FHome%2FIndex?RSVP=true";
+//         console.log(response.statusText);
+//       }
+//       console.log(response.responseText);
+//     }
+//   });
+
+//   console.error("Form submitted!");
+
+//   return;
+// });
 
 // function onSignIn(googleUser) {
 //   var vv = googleUser.getAuthResponse().id_token;

@@ -13,6 +13,7 @@ using Inspiration_International.Models;
 using Microsoft.AspNetCore.Identity;
 using Inspiration_International.Identity;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 
 namespace Inspiration_International.Controllers
 {
@@ -34,16 +35,14 @@ namespace Inspiration_International.Controllers
             _signInManager = signInManager;
         }
 
-        public class Param
-        {
-            public string RSVP { get; set; }
-        }
 
         // [Authorize]
-        public async Task<IActionResult> Index(Param RSVP = null)
+        public async Task<IActionResult> Index(string RSVP)
         {
             try
             {
+                Console.WriteLine($"\n\n\n\n\n\n{RSVP}\n\n\n\n\n\n\n");
+                var v = ModelState.IsValid;
                 // var v = await _commentsRepo
                 // // .UpdateCommentAsync(3, Convert.ToDateTime("2019-08-16T18:51:26.000"),
                 // // "A great article Sir. I need more.", "Coach Victor", 199);
@@ -63,24 +62,25 @@ namespace Inspiration_International.Controllers
                 // {
                 //     Console.WriteLine($"{comment.CommentID} {comment.Name} said {comment.CommentBody} on {comment.DateTimePosted}\n");
                 // }
-
-
                 var model = new RSVPViewModel();
+
                 if (User.Identity.IsAuthenticated)
                 {
                     ApplicationUser user = null;
-
+                    Console.WriteLine($"\n\n\n\n\n\n\n\n {User}");
                     user = await _userManager.FindByNameAsync(User.Identity.Name);
                     model.FirstName = user.FullName.Split(" ")[0];
                     model.PhoneNumber = user.PhoneNumber;
 
+                    var sessionData = HttpContext.Session.GetString("RSVP");//?? "false";
+                    if (sessionData == "true") { model.RSVP = true; }
                 }
-                var identity = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
+                //var identity = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 return View(model);
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine(ex);
                 return View();
             }
 

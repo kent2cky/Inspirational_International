@@ -9,11 +9,9 @@ namespace Inspiration_International.Models
         [StringLength(maximumLength: 15, MinimumLength = 11, ErrorMessage = "Length must be 11 numbers at least")]
         [DataType(DataType.PhoneNumber)]
         public string PhoneNumber { get; set; }
-
+        public bool RSVP { get; set; }
         public string FirstName { get; set; }
-
         public string PictureData { get; set; }
-
 
     }
 }

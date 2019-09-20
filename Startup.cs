@@ -57,7 +57,7 @@ namespace Inspiration_International
             services.Configure<CookiePolicyOptions>(options =>
                 {
                     // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-                    options.CheckConsentNeeded = context => true;
+                    options.CheckConsentNeeded = context => false;
                     options.MinimumSameSitePolicy = SameSiteMode.None;
                     options.HttpOnly = HttpOnlyPolicy.None;
                     options.Secure = _enviroment.IsDevelopment() ?
@@ -122,7 +122,7 @@ namespace Inspiration_International
                 {
                     // Cookie settings
                     options.Cookie.HttpOnly = true;
-                    options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+                    options.ExpireTimeSpan = TimeSpan.FromMinutes(500);
 
                     options.LoginPath = "/Identity/Account/Login";
                     options.AccessDeniedPath = "/Identity/AccessDenied";
@@ -138,7 +138,7 @@ namespace Inspiration_International
             services.AddSession(options =>
             {
                 // Set a short timeout for easy testing.
-                options.IdleTimeout = TimeSpan.FromSeconds(10);
+                options.IdleTimeout = TimeSpan.FromHours(500);
                 options.Cookie.HttpOnly = true;
                 // Make the session cookie essential
                 options.Cookie.IsEssential = true;

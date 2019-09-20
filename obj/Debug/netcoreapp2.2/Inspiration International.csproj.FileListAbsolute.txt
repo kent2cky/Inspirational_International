@@ -134,4 +134,4 @@
 /home/kenny/Desktop/DevResources/Inspiration_International/obj/Debug/netcoreapp2.2/Inspiration International.dll
 /home/kenny/Desktop/DevResources/Inspiration_International/obj/Debug/netcoreapp2.2/Inspiration International.pdb
 /home/kenny/Desktop/DevResources/Inspiration_International/obj/Debug/netcoreapp2.2/Inspiration International.csproj.CopyComplete
-/home/kenny/Desktop/DevResources/Inspiration International/obj/Debug/netcoreapp2.2/Razor/Views/Shared/RSVPPartial/_AuthRSVPPartial.g.cshtml.cs
+/home/kenny/Desktop/DevResources/Inspiration International/obj/Debug/netcoreapp2.2/Razor/Views/Shared/_RSVPOkPartial.g.cshtml.cs
