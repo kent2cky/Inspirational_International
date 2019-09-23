@@ -27,6 +27,9 @@ namespace Inspiration_International.Areas.Identity.Pages.Account
         {
             returnUrl = returnUrl ?? Url.Content("~/");
             await _signInManager.SignOutAsync();
+            HttpContext.Response.Cookies.Delete("_FN");
+            HttpContext.Response.Cookies.Delete("_PN");
+            HttpContext.Response.Cookies.Delete("_rsvp");
             _logger.LogInformation("User logged out.");
             if (returnUrl != null)
             {

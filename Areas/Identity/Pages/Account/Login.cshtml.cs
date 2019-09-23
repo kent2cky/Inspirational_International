@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Http;
+using Inspiration_International.Repositories;
 
 namespace Inspiration_International.Areas.Identity.Pages.Account
 {
@@ -18,11 +20,15 @@ namespace Inspiration_International.Areas.Identity.Pages.Account
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ILogger<LoginModel> _logger;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IRSVPRepo _rsvpRepo;
 
-        public LoginModel(SignInManager<ApplicationUser> signInManager, ILogger<LoginModel> logger)
+        public LoginModel(SignInManager<ApplicationUser> signInManager, ILogger<LoginModel> logger, UserManager<ApplicationUser> userManager, IRSVPRepo rsvpRepo)
         {
             _signInManager = signInManager;
             _logger = logger;
+            _userManager = userManager;
+            _rsvpRepo = rsvpRepo;
         }
 
         [BindProperty]
@@ -75,9 +81,42 @@ namespace Inspiration_International.Areas.Identity.Pages.Account
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
                 var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: true);
+
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");
+                    var user = await _userManager.FindByEmailAsync(Input.Email);
+                    var PhoneNumber = user.PhoneNumber != null;
+
+                    if (await _rsvpRepo.GetSingleRSVPByUserIDAsync(user.Id.ToString()) != null)
+                    {
+                        Response.Cookies.Append("_rsvp", "Frue", new CookieOptions()
+                        {
+                            Path = "/",
+                            HttpOnly = true
+                        });
+                    }
+                    else
+                    {
+                        Response.Cookies.Append("_rsvp", "False", new CookieOptions()
+                        {
+                            Path = "/",
+                            HttpOnly = true
+                        });
+                    }
+
+                    Response.Cookies.Append("_FN", user.FullName.Split(" ")[0], new CookieOptions()
+                    {
+                        Path = "/",
+                        HttpOnly = true
+                    });
+
+                    Response.Cookies.Append("_PN", PhoneNumber.ToString(), new CookieOptions()
+                    {
+                        Path = "/",
+                        HttpOnly = true
+                    });
+
                     return LocalRedirect(returnUrl);
                 }
                 if (result.RequiresTwoFactor)

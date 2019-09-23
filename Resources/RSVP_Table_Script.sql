@@ -43,8 +43,7 @@
 --     -- primary key column
 --     Date_For [DATETIME] NOT NULL,
 --     --- Date when the next class is going to hold.
---     Contact [NVARCHAR] (MAX) NULL,
---     _Name [NVARCHAR] (MAX) NULL,
+--     UserID [NVARCHAR] (MAX) NULL,
 --     Did_Attend [INT] NOT NULL,
 --     --- Did this person eventually attend?
 --     --- Records 0 if the person attended otherwise records 1; 
@@ -55,25 +54,25 @@
 
 -- INSERT INTO RSVP
 --     ( -- columns to insert data into
---     [Date_For], [Contact],
---     [_Name], [Did_Attend]
+--     [Date_For],
+--     [UserID], [Did_Attend]
 --     )
 -- VALUES
 --     ( -- first row: values for the columns in the list above
 --         CONVERT([DATETIME], '19-02-19 9:55:56 PM', 5), 'cocoon.cocoon@gmail.com',
---         'Ugochukwu Maduka', 0
+--         0
 -- ),
 --     ( -- second row: values for the columns in the list above
 --         CONVERT([DATETIME], '12-02-19 8:15:56 PM', 5), '0700002685682',
---         'Kenny Maddy', 0
+--         0
 -- ),
 --     ( -- third row: values for the columns in the list above
 --         CONVERT([DATETIME], '11-02-19 7:23:26 PM', 5), 'kentuckymaduka@yahoo.com',
---         'Coach Oris', 1      
+--         1      
 -- ),
 --     ( -- fourth row: values for the columns in the list above
 --         CONVERT([DATETIME], '13-02-19 6:51:26 PM', 5), '3040583884384',
---         'Ciroma Adekunle Chukwuma', 0
+--         0
 -- )
 -- -- add more rows here
 -- GO
@@ -87,8 +86,7 @@
 -- CREATE PROCEDURE spSubmitRSVP
 --     (
 --     @Date_For [DATETIME],
---     @Contact [NVARCHAR] (MAX),
---     @_Name [NVARCHAR] (MAX),
+--     @UserID [NVARCHAR] (MAX),
 --     @Did_Attend [INT]
 -- )
 -- AS
@@ -98,11 +96,10 @@
 
 --         -- columns to insert data into
 
---         [Date_For], [Contact],
---         [_Name], [Did_Attend]
+--         [Date_For],[UserID], [Did_Attend]
 --         )
 --     VALUES
---         (@Date_For, @Contact, @_Name,
+--         (@Date_For, @UserID,
 --             @Did_Attend)
 -- END
 
@@ -110,12 +107,13 @@
 -- to update an article on the
 -- RSVP table.
 
+-- DROP PROCEDURE dbo.spUpdateRSVP;
+
 -- CREATE PROCEDURE spUpdateRSVP
 --     (
 --     @ID [INT],
 --     @Date_For [DATETIME],
---     @Contact [NVARCHAR] (MAX),
---     @_Name [NVARCHAR] (MAX),
+--     @UserID [NVARCHAR] (MAX),
 --     @Did_Attend [INT]
 -- )
 -- AS
@@ -124,8 +122,7 @@
 
 --  -- columns to insert updates into
 
---     SET [Date_For]=@Date_For, [_Name]=@_Name,
---          [Contact]=@Contact,
+--     SET [Date_For]=@Date_For, [UserID]=@UserID,
 --          [Did_Attend]=@Did_Attend
 --     WHERE ID=@ID
 -- END
@@ -185,8 +182,25 @@
 --     WHERE @ID=ID
 -- END
 
+-- Create a stored procedure to
+-- retrieve a single RSVP on the RSVP table using the userId
 
--- EXEC dbo.spGetSingleRSVP 1;
+-- DROP PROCEDURE spGetSingleRSVPByUserId
+-- GO
+
+-- CREATE PROCEDURE spGetSingleRSVPByUserId
+--     (
+--     @UserID [NVARCHAR](126)
+-- )
+-- AS
+-- BEGIN
+--     SELECT *
+--     FROM RSVP
+--     WHERE @UserID=UserID
+-- END
+
+
+-- EXEC dbo.spGetSingleRSVPByUserId 'kentuckymaduka@yahoo.com';
 -- GO
 
 -- DROP PROCEDURE dbo.spSubmitRSVP;
@@ -198,13 +212,12 @@
 -- DECLARE @Did_Attend NVARCHAR(MAX)
 
 -- SET @datefor = '2020-01-08T10:29:34';
--- SET @name = 'Kent2ckyDev';
--- SET @Contact = 'proper contact';
+-- SET @name = 'Kent2cky@Dev';
 -- SET @Did_Attend = 1;
 
--- EXEC dbo.spUpdateRSVP 6, @datefor, @Contact, @name, @Did_Attend
+-- EXEC dbo.spUpdateRSVP 5, @datefor, @name, @Did_Attend
 
--- EXEC dbo.spSubmitRSVP @datefor, @Contact, @name, @Did_Attend ;
+-- EXEC dbo.spSubmitRSVP @datefor, @name, @Did_Attend ;
 -- GO
 
 
@@ -215,6 +228,7 @@
 -- GO
 
 -- EXEC dbo.spDeleteRSVP 6
+-- ALTER TABLE RSVP ADD COLUMN _Name;
 
 EXEC dbo.spGetAllRSVP ;
 GO
@@ -225,3 +239,4 @@ GO
 
 --- Some of the queries contained in this script are for reference purposes
 --- in case I need them in the future.
+

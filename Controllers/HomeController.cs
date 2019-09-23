@@ -62,21 +62,12 @@ namespace Inspiration_International.Controllers
                 // {
                 //     Console.WriteLine($"{comment.CommentID} {comment.Name} said {comment.CommentBody} on {comment.DateTimePosted}\n");
                 // }
-                var model = new RSVPViewModel();
+                var rsvpViewModel = new RSVPViewModel();
+                rsvpViewModel.FirstName = Request.Cookies["_FN"] ?? string.Empty;
+                rsvpViewModel.RSVP = Request.Cookies["_rsvp"] == string.Empty ? true : false;
+                rsvpViewModel.PhoneNumber = Request.Cookies["_PN"] ?? string.Empty;
 
-                if (User.Identity.IsAuthenticated)
-                {
-                    ApplicationUser user = null;
-                    Console.WriteLine($"\n\n\n\n\n\n\n\n {User}");
-                    user = await _userManager.FindByNameAsync(User.Identity.Name);
-                    model.FirstName = user.FullName.Split(" ")[0];
-                    model.PhoneNumber = user.PhoneNumber;
-
-                    var sessionData = HttpContext.Session.GetString("RSVP");//?? "false";
-                    if (sessionData == "true") { model.RSVP = true; }
-                }
-                //var identity = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                return View(model);
+                return View(rsvpViewModel);
             }
             catch (Exception ex)
             {

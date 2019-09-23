@@ -56,13 +56,26 @@ namespace Inspiration_International.Controllers
                 var user = await _userManager.FindByEmailAsync(User.Identity.Name);
                 var date = DateTime.Now;
                 var dateOfSunday = date.Next(DayOfWeek.Sunday);
-                var v = await _rsvpRepo.SumbitRSVPAsync(dateOfSunday, user.PhoneNumber, user.FullName, 0);
+                var expireTime = new DateTime(
+                    dateOfSunday.Year,
+                    dateOfSunday.Month,
+                    dateOfSunday.Day,
+                    23, 59, 59);
+                Console.WriteLine("\n\n\n\n\n\n\n\n\n\n\n\n" + expireTime + "\n\n\n\n\n\n\n\n\n\n\n\n");
+                // // // HttpContext.Response.Cookies.Append("_rsvp", "True",
+                // // //         new CookieOptions()
+                // // //         {
+                // // //             Path = "/",
+                // // //             Expires = expireTime,
+                // // //             HttpOnly = true
+                // // //         });
+                // // var v = await _rsvpRepo.SumbitRSVPAsync(dateOfSunday, user.Id.ToString(), 0);
 
-                if (v != 0)
-                {
-                    _logger.LogError("RSVP submission not successful!!\n\n\n\n\n\n\n\n");
-                    //throw()
-                }
+                // if (v != 0)
+                // {
+                //     _logger.LogError("RSVP submission not successful!!\n\n\n\n\n\n\n\n");
+                //     //throw()
+                // }
                 _logger.LogInformation($"RSVP submitted successfully!!!\n\n\n\n\n\n\n\n");
                 string response = "RSVP submitted!!";
                 return Ok(response);
@@ -85,15 +98,28 @@ namespace Inspiration_International.Controllers
                 var user = await _userManager.FindByEmailAsync(User.Identity.Name);
                 var date = DateTime.Now;
                 var dateOfSunday = date.Next(DayOfWeek.Sunday);
-                var v = await _rsvpRepo.SumbitRSVPAsync(dateOfSunday, user.PhoneNumber, user.FullName, 0);
+                var expireTime = new DateTime(
+                    dateOfSunday.Year,
+                    dateOfSunday.Month,
+                    dateOfSunday.Day,
+                    23, 59, 59);
+                Console.WriteLine("\n\n\n\n\n\n\n\n\n\n\n\n" + expireTime + "\n\n\n\n\n\n\n\n\n\n\n\n");
+                // HttpContext.Response.Cookies.Append("_rsvp", "True",
+                //         new CookieOptions()
+                //         {
+                //             Path = "/",
+                //             Expires = expireTime,
+                //             HttpOnly = true
+                //         });
 
-                if (v != 0)
-                {
-                    _logger.LogError("RSVP submission not successful!!\n\n\n\n\n\n\n\n");
-                    //throw()
-                }
+                // var v = await _rsvpRepo.SumbitRSVPAsync(dateOfSunday, user.Id.ToString(), 0);
 
-                HttpContext.Session.SetString("RSVP", RSVP);
+                // if (v != 0)
+                // {
+                //     _logger.LogError("RSVP submission not successful!!\n\n\n\n\n\n\n\n");
+                //     //throw()
+                // }
+
                 return RedirectToAction("Index", "Home");
             }
 

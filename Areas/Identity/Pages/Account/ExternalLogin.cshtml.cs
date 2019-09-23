@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
+using Inspiration_International.Repositories;
 
 namespace Inspiration_International.Areas.Identity.Pages.Account
 {
@@ -20,15 +22,18 @@ namespace Inspiration_International.Areas.Identity.Pages.Account
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<ExternalLoginModel> _logger;
+        private IRSVPRepo _rsvpRepo;
 
         public ExternalLoginModel(
             SignInManager<ApplicationUser> signInManager,
             UserManager<ApplicationUser> userManager,
-            ILogger<ExternalLoginModel> logger)
+            ILogger<ExternalLoginModel> logger,
+            IRSVPRepo rsvpRepo)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _logger = logger;
+            _rsvpRepo = rsvpRepo;
         }
 
         [BindProperty]
@@ -80,6 +85,36 @@ namespace Inspiration_International.Areas.Identity.Pages.Account
             var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
             if (result.Succeeded)
             {
+                var user = await _userManager.FindByEmailAsync(info.Principal.FindFirstValue(ClaimTypes.Email));
+                var FirstName = info.Principal.FindFirst(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name")?.Value.Split(" ")[0];
+                var PhoneNumber = user.PhoneNumber != null;
+                Response.Cookies.Append("_FN", FirstName, new CookieOptions()
+                {
+                    Path = "/",
+                    HttpOnly = true
+                });
+                Response.Cookies.Append("_PN", PhoneNumber.ToString(), new CookieOptions()
+                {
+                    Path = "/",
+                    HttpOnly = true
+                });
+
+                if (await _rsvpRepo.GetSingleRSVPByUserIDAsync(user.Id.ToString()) is null)
+                {
+                    Response.Cookies.Append("_rsvp", "True", new CookieOptions()
+                    {
+                        Path = "/",
+                        HttpOnly = true
+                    });
+                }
+                else
+                {
+                    Response.Cookies.Append("_rsvp", "False", new CookieOptions()
+                    {
+                        Path = "/",
+                        HttpOnly = true
+                    });
+                }
                 _logger.LogInformation("{Name} logged in with {LoginProvider} provider.", info.Principal.Identity.Name, info.LoginProvider);
                 return LocalRedirect(returnUrl);
             }
@@ -158,6 +193,19 @@ namespace Inspiration_International.Areas.Identity.Pages.Account
                         props.IsPersistent = true;
 
                         await _signInManager.SignInAsync(user, isPersistent: true);
+
+                        var FirstName = user.FullName.Split(" ")[0];
+                        var PhoneNumber = user.PhoneNumber != null;
+                        Response.Cookies.Append("_FN", FirstName, new CookieOptions()
+                        {
+                            Path = "/",
+                            HttpOnly = true
+                        });
+                        Response.Cookies.Append("_PN", PhoneNumber.ToString(), new CookieOptions()
+                        {
+                            Path = "/",
+                            HttpOnly = true
+                        });
                         _logger.LogInformation("User created an account using {Name} provider.", info.LoginProvider);
                         return LocalRedirect(returnUrl);
                     }
