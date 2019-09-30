@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
 using Inspiration_International.Repositories;
+using Inspiration_International.Helpers;
 
 namespace Inspiration_International.Areas.Identity.Pages.Account
 {
@@ -86,36 +87,26 @@ namespace Inspiration_International.Areas.Identity.Pages.Account
                 {
                     _logger.LogInformation("User logged in.");
                     var user = await _userManager.FindByEmailAsync(Input.Email);
-                    var PhoneNumber = user.PhoneNumber != null;
+                    // Check if the user has a phone number.
+                    TempData["_PN"] = user.PhoneNumber != null ? "true" : "false";
+                    TempData["_FN"] = user.FullName.Split(" ")[0];
 
-                    if (await _rsvpRepo.GetSingleRSVPByUserIDAsync(user.Id.ToString()) != null)
+                    // Check if the user has RSVPd for the next class.
+                    // and if so get the user's record.
+                    var rsvp = await _rsvpRepo.GetSingleRSVPByUserIDAndDateForAsync(
+                        user.Id.ToString(),
+                        DateTime.Now.Next(DayOfWeek.Sunday)
+                   );
+                    var nextSunday = DateTime.Now.Next(DayOfWeek.Sunday);
+
+                    if (rsvp != null && (rsvp.DateFor.Date == nextSunday.Date))
                     {
-                        Response.Cookies.Append("_rsvp", "Frue", new CookieOptions()
-                        {
-                            Path = "/",
-                            HttpOnly = true
-                        });
+                        TempData["rsvp"] = "true";
                     }
                     else
                     {
-                        Response.Cookies.Append("_rsvp", "False", new CookieOptions()
-                        {
-                            Path = "/",
-                            HttpOnly = true
-                        });
+                        TempData["rsvp"] = "false";
                     }
-
-                    Response.Cookies.Append("_FN", user.FullName.Split(" ")[0], new CookieOptions()
-                    {
-                        Path = "/",
-                        HttpOnly = true
-                    });
-
-                    Response.Cookies.Append("_PN", PhoneNumber.ToString(), new CookieOptions()
-                    {
-                        Path = "/",
-                        HttpOnly = true
-                    });
 
                     return LocalRedirect(returnUrl);
                 }

@@ -6,7 +6,7 @@ function Helloworld() {
   console.log("Hello from Inspiration International!!");
 }
 
-$("div.nav_handle-container").click(function () {
+$("div.nav_handle-container").click(() => {
   if ($(".toggled").is(":visible")) {
     $(".toggled").hide(500);
     console.log("Show clicked!");
@@ -16,24 +16,29 @@ $("div.nav_handle-container").click(function () {
   console.log("Hide clicked!");
 });
 
-$(".rsvp-ok").click(function () {
+$(".rsvp-ok").click(() => {
   $(".rsvp-input-container").css("display", "flex");
   $(".rsvp-cover").hide();
   console.log("Show clicked!");
 });
 
-$("#cancel-submit").click(
-  function () {
-    console.log("Cancel button clicked....");
-    alert("There would no way to contact you without your phone number")
+
+// If user declines submitting her/his phoneNumber
+$("#decline-submit").click(
+  () => {
+    console.log("Decline button clicked....");
+    alert("There would be no way to contact you without your phone number.");
+    localStorage.setItem("_PNdeclined", "True");
     $(".rsvp-cover>fieldset").replaceWith(
       "Thanks for the RSVP. See you on Sunday."
     );
   }
 );
 
+
+
 // Submit RSVP
-$("#rsvp-click").click(function () {
+$("#rsvp-click").click(() => {
   var data = JSON.stringify({
     RSVP: true,
     PhoneNumber: 23456789123,
@@ -47,18 +52,18 @@ $("#rsvp-click").click(function () {
     data: data,
     contentType: "application/json; charset=utf-8",
     processData: false,
-    success: function (response) {
+    success: (response) => {
       console.log("from success. %0", JSON.stringify(response));
       //alert(response);
       $(".rsvp-cover>p").replaceWith(response);
     },
-    error: function (response) {
+    error: (response) => {
       console.log(response);
       $(".rsvp-cover").append(response.responseText);
       if (response.status == 401) {
         console.log("Redirecting to login page......");
         window.location.href =
-          "/Identity/Account/Login?ReturnUrl=%2FRSVP%2FSubmitRSVPs?RSVP=true";
+          "/Identity/Account/Login?ReturnUrl=%2FRSVP%2FSubmitRSVPs";
         console.log(response.statusText);
       } else {
         alert("Error sending your RSVP. Please try again later.");
@@ -67,6 +72,9 @@ $("#rsvp-click").click(function () {
     }
   });
 });
+
+
+
 
 // Submit rsvp form
 // $("#submit-rsvp").click(function () {

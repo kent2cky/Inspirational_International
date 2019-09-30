@@ -30,14 +30,7 @@
 
 @section RSVP 
 {
-        @if(!Model.RSVP)
-        {
-            await Html.RenderPartialAsync("_RSVPPartial.cshtml", Model);
-        }
-        else 
-        {
-            await Html.RenderPartialAsync("_RSVPOkPartial.cshtml", Model);       
-        }
+           @{ await Html.RenderPartialAsync("_RSVPPartial.cshtml");}
 }
 
 

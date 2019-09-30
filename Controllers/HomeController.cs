@@ -14,6 +14,8 @@ using Microsoft.AspNetCore.Identity;
 using Inspiration_International.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Inspiration_International.Helpers;
+using Newtonsoft.Json;
 
 namespace Inspiration_International.Controllers
 {
@@ -34,15 +36,11 @@ namespace Inspiration_International.Controllers
             _userManager = userManager;
             _signInManager = signInManager;
         }
-
-
-        // [Authorize]
-        public async Task<IActionResult> Index(string RSVP)
+        public async Task<IActionResult> Index()
         {
             try
             {
-                Console.WriteLine($"\n\n\n\n\n\n{RSVP}\n\n\n\n\n\n\n");
-                var v = ModelState.IsValid;
+
                 // var v = await _commentsRepo
                 // // .UpdateCommentAsync(3, Convert.ToDateTime("2019-08-16T18:51:26.000"),
                 // // "A great article Sir. I need more.", "Coach Victor", 199);
@@ -63,9 +61,16 @@ namespace Inspiration_International.Controllers
                 //     Console.WriteLine($"{comment.CommentID} {comment.Name} said {comment.CommentBody} on {comment.DateTimePosted}\n");
                 // }
                 var rsvpViewModel = new RSVPViewModel();
-                rsvpViewModel.FirstName = Request.Cookies["_FN"] ?? string.Empty;
-                rsvpViewModel.RSVP = Request.Cookies["_rsvp"] == string.Empty ? true : false;
-                rsvpViewModel.PhoneNumber = Request.Cookies["_PN"] ?? string.Empty;
+
+
+                var dateOfNextClass = DateTime.Now.Next(DayOfWeek.Sunday);
+
+
+                //var phoneNumber = TempData["_PN"].ToString();
+                rsvpViewModel.FirstName = "Kennis";//TempData["_FN"].ToString() ?? "";
+                rsvpViewModel.RSVP = false;//Request.Cookies["_rsvp"] == "true" ? true : false;
+                rsvpViewModel.PhoneNumber = "true";//phoneNumber == "true" ? phoneNumber : "false";
+                rsvpViewModel.DateOfNextClass = dateOfNextClass;
 
                 return View(rsvpViewModel);
             }
@@ -75,6 +80,16 @@ namespace Inspiration_International.Controllers
                 return View();
             }
 
+        }
+
+        public async Task<IActionResult> SetSession([FromQuery] string LS)
+        {
+            if (ModelState.IsValid)
+            {
+                HttpContext.Session.SetString("hasPhoneNumber", LS);
+                return Ok();
+            }
+            return BadRequest();
         }
 
         public IActionResult Privacy()

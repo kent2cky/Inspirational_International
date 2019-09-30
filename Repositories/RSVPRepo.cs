@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 using Inspiration_International.Entities;
+using Inspiration_International.Helpers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -144,7 +145,7 @@ namespace Inspiration_International.Repositories
                     // Retrieve single rsvp using a stored procedure created in the database
                     SqlCommand cmd = new SqlCommand("dbo.spGetSingleRSVPByUserId", con);
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add("@UserID", SqlDbType.Int).Value = userID;
+                    cmd.Parameters.Add("@UserID", SqlDbType.NVarChar).Value = userID;
 
                     // Open database connection
                     await con.OpenAsync();
@@ -171,6 +172,57 @@ namespace Inspiration_International.Repositories
             {
                 //Send errors to Logs.txt
                 _logger.LogError(ex, "Something went wrong in RSVPRepo's GetSingleRSVPByUserIDAsync method.\n");
+                return null;
+            }
+        }
+
+        public async Task<RSVP> GetSingleRSVPByUserIDAndDateForAsync(string userID, DateTime dateFor)
+        {
+            if (userID == string.Empty || dateFor.Date != DateTime.Now.Next(DayOfWeek.Sunday).Date)
+            {
+                _logger.LogError($"Invalid parameter supplied to RSVPRepo's GetSingleRSVPByUserIDAndDateForAsync. Parameter Value: {userID}\t {dateFor}\n");
+                return null;
+            }
+            _logger.LogInformation($"Getting RSVP with user id: {userID} and date: {dateFor.Date}\n");
+            try
+            {
+                // Create empty rsvp object
+
+                var rsvp = new RSVP();
+
+                using (SqlConnection con = new SqlConnection(connectionString))
+                {
+                    // Retrieve single rsvp using a stored procedure created in the database
+                    SqlCommand cmd = new SqlCommand("dbo.spGetSingleRSVPByUserIdAndDateFor", con);
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@UserID", SqlDbType.NVarChar).Value = userID;
+                    cmd.Parameters.Add("@Date_For", SqlDbType.DateTime).Value = dateFor.Date;
+
+                    // Open database connection
+                    await con.OpenAsync();
+                    _logger.LogInformation("Database connection opened...............\n");
+                    SqlDataReader rdr = await cmd.ExecuteReaderAsync();
+                    _logger.LogInformation("Reading from database...............\n");
+
+                    while (rdr.Read())
+                    {
+                        // initialize rsvp object with data retrieved from database
+                        rsvp.RsvpID = Convert.ToInt16(rdr["ID"]);
+                        rsvp.DateFor = Convert.ToDateTime(rdr["Date_For"]);
+                        rsvp.UserID = rdr["UserID"].ToString();
+                        rsvp.DidAttend = rdr["Did_Attend"].ToString() == "0"; // Records 0 in database if the person attended otherwise records 1
+                        // rsvp.DidAttend will be true if 0 is returned from database otherwise will be false
+                    }
+                    // Close database connection
+                    con.Close();
+                    _logger.LogInformation("Database connection closed.\n");
+                }
+                return rsvp;
+            }
+            catch (Exception ex)
+            {
+                //Send errors to Logs.txt
+                _logger.LogError(ex, "Something went wrong in RSVPRepo's GetSingleRSVPByUserIDAndDateForAsync method.\n");
                 return null;
             }
         }
@@ -286,7 +338,7 @@ namespace Inspiration_International.Repositories
             _logger.LogInformation($"Deleting RSVP {rsvpID}.\n");
             try
             {
-                int result;
+                int cmdresult;
                 // Connect to the database
                 using (SqlConnection con = new SqlConnection(connectionString))
                 {
@@ -299,14 +351,14 @@ namespace Inspiration_International.Repositories
                     await con.OpenAsync();
                     _logger.LogInformation("Database connection opened...............\n");
                     // Execute command
-                    result = await cmd.ExecuteNonQueryAsync();
-                    _logger.LogInformation($"Command Executed.\t{result} rows affected.\n");
+                    cmdresult = await cmd.ExecuteNonQueryAsync();
+                    _logger.LogInformation($"Command Executed.\t{cmdresult} rows affected.\n");
                     // Close database connection
                     con.Close();
                     _logger.LogInformation("Database connection closed.\n");
                 }
 
-                return result == 0 ? 1 : 0; //Returns 0 if successful    
+                return cmdresult == 0 ? 1 : 0; //Returns 0 if successful    
             }
             catch (Exception ex)
             {
@@ -326,7 +378,7 @@ namespace Inspiration_International.Repositories
             _logger.LogInformation("Submitting RSVP...................\n");
             try
             {
-                int result;
+                int cmdresult;
 
                 // Connect to the database
                 using (SqlConnection con = new SqlConnection(connectionString))
@@ -342,14 +394,14 @@ namespace Inspiration_International.Repositories
                     await con.OpenAsync();
                     _logger.LogInformation("Database connection opened...............\n");
                     // Execute command
-                    result = cmd.ExecuteNonQuery();
-                    _logger.LogInformation($"Command executed!\t{result} rows affected.");
+                    cmdresult = cmd.ExecuteNonQuery();
+                    _logger.LogInformation($"Command executed!\t{cmdresult} rows affected.");
                     // Close database connection
                     con.Close();
                     _logger.LogInformation("Database connection closed.\n");
                 }
 
-                return result == 0 ? 1 : 0; // Returns 0 if successful.
+                return cmdresult == 0 ? 1 : 0; // Returns 0 if successful.
             }
             catch (Exception ex)
             {

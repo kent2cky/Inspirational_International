@@ -43,88 +43,92 @@ namespace Inspiration_International.Controllers
         }
 
         [HttpPost]
-        [HttpGet]
         public async Task<IActionResult> SubmitRSVP([FromBody]RSVPViewModel model = null)
         {
+            _logger.LogInformation($"Submitting RSVP from user: {User.Identity.Name}...............\n");
+
             _logger.LogCritical("RSVPSubmit Hit!!!!\n\n\n\n\n" +
              model.RSVP + model.PhoneNumber + model.FirstName + model.PictureData);
 
-
-
             if (ModelState.IsValid)
             {
+                // Get the ID of the user
                 var user = await _userManager.FindByEmailAsync(User.Identity.Name);
-                var date = DateTime.Now;
-                var dateOfSunday = date.Next(DayOfWeek.Sunday);
-                var expireTime = new DateTime(
-                    dateOfSunday.Year,
-                    dateOfSunday.Month,
-                    dateOfSunday.Day,
-                    23, 59, 59);
-                Console.WriteLine("\n\n\n\n\n\n\n\n\n\n\n\n" + expireTime + "\n\n\n\n\n\n\n\n\n\n\n\n");
-                // // // HttpContext.Response.Cookies.Append("_rsvp", "True",
-                // // //         new CookieOptions()
-                // // //         {
-                // // //             Path = "/",
-                // // //             Expires = expireTime,
-                // // //             HttpOnly = true
-                // // //         });
-                // // var v = await _rsvpRepo.SumbitRSVPAsync(dateOfSunday, user.Id.ToString(), 0);
 
-                // if (v != 0)
-                // {
-                //     _logger.LogError("RSVP submission not successful!!\n\n\n\n\n\n\n\n");
-                //     //throw()
-                // }
-                _logger.LogInformation($"RSVP submitted successfully!!!\n\n\n\n\n\n\n\n");
-                string response = "RSVP submitted!!";
-                return Ok(response);
+                // Next(DayOfWeek.Sunday) is an extension method.
+                var dateOfNextClass = DateTime.Now.Next(DayOfWeek.Sunday);
+                var expireTime = new DateTime(
+                    dateOfNextClass.Year,
+                    dateOfNextClass.Month,
+                    dateOfNextClass.Day,
+                    23, 59, 59);
+
+                // Returns 0 if success else 1
+                var response = await _rsvpRepo.SumbitRSVPAsync(dateOfNextClass, user.Id.ToString(), 0);
+
+                if (response == 0)
+                {
+                    // Set cookie if submission is successful
+                    HttpContext.Response.Cookies.Append("_rsvp", "True",
+                        new CookieOptions()
+                        {
+                            Path = "/",
+                            Expires = expireTime,
+                            HttpOnly = true
+                        });
+
+                    _logger.LogInformation($"RSVP submitted successfully!!!\n\n\n\n\n\n\n\n");
+                    return Ok("RSVP submitted!");
+                }
+
+                _logger.LogError("RSVP submission not successful!!\n");
+
+                return BadRequest("RSVP submission not successful. Try again later.");
             }
 
-
-            return RedirectToAction("Index", "Home");//BadRequest();//model);
-
+            return BadRequest("Bad Request.");
         }
 
         [HttpGet]
         public async Task<IActionResult> SubmitRSVPs([FromQuery]string RSVP = null)
         {
-            _logger.LogCritical("RSVPSubmit Hit!!!!\n\n\n\n\n" + RSVP);
-
-
+            _logger.LogInformation($"Submitting RSVP from user: {User.Identity.Name}...............\n");
 
             if (ModelState.IsValid)
             {
+                // To get id of the user
                 var user = await _userManager.FindByEmailAsync(User.Identity.Name);
-                var date = DateTime.Now;
-                var dateOfSunday = date.Next(DayOfWeek.Sunday);
+                var dateOfNextClass = DateTime.Now.Next(DayOfWeek.Sunday);
                 var expireTime = new DateTime(
-                    dateOfSunday.Year,
-                    dateOfSunday.Month,
-                    dateOfSunday.Day,
+                    dateOfNextClass.Year,
+                    dateOfNextClass.Month,
+                    dateOfNextClass.Day,
                     23, 59, 59);
-                Console.WriteLine("\n\n\n\n\n\n\n\n\n\n\n\n" + expireTime + "\n\n\n\n\n\n\n\n\n\n\n\n");
-                // HttpContext.Response.Cookies.Append("_rsvp", "True",
-                //         new CookieOptions()
-                //         {
-                //             Path = "/",
-                //             Expires = expireTime,
-                //             HttpOnly = true
-                //         });
 
-                // var v = await _rsvpRepo.SumbitRSVPAsync(dateOfSunday, user.Id.ToString(), 0);
+                var response = await _rsvpRepo.SumbitRSVPAsync(dateOfNextClass, user.Id.ToString(), 0);
 
-                // if (v != 0)
-                // {
-                //     _logger.LogError("RSVP submission not successful!!\n\n\n\n\n\n\n\n");
-                //     //throw()
-                // }
+                if (response == 0)
+                {
+                    // Set cookie if submission is successful
+                    HttpContext.Response.Cookies.Append("_rsvp", "True",
+                        new CookieOptions()
+                        {
+                            Path = "/",
+                            Expires = expireTime,
+                            HttpOnly = true
+                        });
+                    _logger.LogInformation("Submission successful!\n");
 
-                return RedirectToAction("Index", "Home");
+                    // Redirect to home so as to refresh the page.
+                    return RedirectToAction("Index", "Home");
+                }
+
+                _logger.LogError("RSVP submission not successful!!\n");
+
+                return BadRequest("RSVP submission not successful. Try again later.");
             }
 
-
-            return BadRequest();
+            return BadRequest("Bad Request.");
         }
 
         public IActionResult Privacy()

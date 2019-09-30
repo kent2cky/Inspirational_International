@@ -2,8 +2,18 @@
 
 <aside>
     <div class="rsvp-cover">
-        @if(User.Identity.IsAuthenticated && (Model.PhoneNumber == null))
-        {
+        <div id="will-you-rsvp" style="display: none;">
+            <p>
+                <h4 class="salute">Hey</h4>
+                <br>
+                <h4 class="showNextClass">Join us in our next class </h4>
+                <br>
+                RSVP Here.
+                <button id="rsvp-click"  class=".rsvp-ok" asp-action="Index" asp-controller="RSVP">Okay</button>
+            </p>
+        </div>
+
+        <div id="get-phoneNumber" style="display: none;">
                 <fieldset>
                     <legend align="center">RSVP</legend>
                     <p>Please submit your phone number so we can contact you.</p>
@@ -13,25 +23,133 @@
                             <input asp-for="PhoneNumber" class="text-input" id="text-input-1" type="text" >
                             <span asp-validation-for="PhoneNumber"></span>
                             <button id="submit-no" type="submit" class="btn">Submit</button>
-                            <button id="cancel-submit" class="btn">Cancel</button>
+                            <button id="decline-submit" class="btn">Decline</button>
                         </div> 
                     </form> 
                 </fieldset>
+        </div>
+
+
+        <div id="rsvp-done" style="display: block;">
+                <p>
+                    <span>Hey</span>
+                    <br>
+                    <span class="showNextClass"> We are expecting you in the class on!</span>
+                </p>
+        </div>
+
+        <script>
+
+        var willYouRSVP = document.getElementById('will-you-rsvp');
+        var getPhoneNumber = document.getElementById('get-phoneNumber');
+        var rsvpDone = document.getElementById('rsvp-done');
+        var showNextClass = document.getElementsByClassName('showNextClass');
+        var nextClass = document.createElement('span');
+        var rsvpModel = @Html.Raw(Json.Serialize(Model)); // Get hold of the view model as a js object.
+        console.log(rsvpModel)
+        var dateWithoutTime = rsvpModel.dateOfNextClass.split('T')[0];
+        console.log('Split date:' + dateWithoutTime)
+        var localDate = new Date().toISOString();
+        var splitLocalDate = localDate.split('T')[0];
+        console.log(splitLocalDate);
+
+        var date = new Date(dateWithoutTime + 'T00:00:00Z').toLocaleDateString(undefined, {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric'
+        });
+        var day = new Date(splitLocalDate + 'T00:00:00Z').toLocaleDateString (undefined, {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric'
+        });
+
+        if(date === day){
+        nextClass.innerText = 'today at 1:00pm.';
+        l = showNextClass.length;
+        console.log(l);
+            for(i = 0; i < l; i++)
+            {
+            showNextClass[i].appendChild(nextClass);
+            console.log(showNextClass)
+            }
+        } else {
+                    nextClass.innerText = ' ' + date;
+                    showNextClass[0].appendChild(nextClass);
+                    console.log(showNextClass)
         }
-        else
-        {
-            <p>
-                <span>Hey @Model.FirstName </span>
-                <br>
-                Join us in our next class on Sunday 25 August 2019?
-                <br>
-                RSVP Here.
-                <button id="rsvp-click"  class=".rsvp-ok" asp-action="Index" asp-controller="RSVP">Okay</button>
-            </p>
+
+
+
+
+        //if(setLocalStorage(rsvpModel) !== 0)
+        //{
+        //    setSession(rsvpModel);
+       // }
+
+        function setLocalStorage(data){
+            if(data === null){
+                
+                console.log('Please supply data to set session storage with.')
+                    return 1;
+                }
+                console.log('Saving data to local storage......');
+            try { 
+                    var localStorage = window['localStorage'];
+                    localStoage.setItem("_rsvp", data.rsvp);
+                    localStorage.setItem("_FN", data.firstName);
+                    localStorage.setItem("_dateOfNextClass", data.dateOfNextClass);
+
+                    console.log('Data stored in localStorage.');
+                    // returns 0 if successful
+                    return 0
+            }
+            catch(error) {
+                    console.error(error);
+                    //return 1 if not successful
+                    return 1
+            }
+
         }
+
+        function display(model){
+
+                    //if(model.rsvp === true){
+                        console.log('kent2cky');
+                       // if(model.phoneNumber === 'f'){
+                            console.log('Does he have phoneNumber? ' + model.phoneNumber);
+                          //  rsvpDone.style.display = 'none';
+                            getPhoneNumber.style.display = 'block';
+                      //      return;
+                      //  }
+                        //rsvpDone.style.display = 'none';
+                        willYouRSVP.style.display = 'block';
+                        return;
+                    //}
+        }   
+
+
+        function setSession(data) {
+                        
+                        if(data === null)
+                        {
+                            console.log('Please supply data to set session storage with.');
+                            return 1;
+                        }
+                    console.log('Setting session storage instead.......');
+                    sessionStorage.setItem('_FN', data.firstName);
+                    sessionStorage.setItem('_rsvp', data.rsvp);
+                    sessionStorage.setItem('dateOfNextClass', data.dateOfNextClass);
+                    console.log('Data stored in session storage.');
+                    //returns 0 if successful
+                    return 0;
+                    }
+
+
+
+    display(rsvpModel);
+        </script>
     </div>
-
-
 </aside>
 
 

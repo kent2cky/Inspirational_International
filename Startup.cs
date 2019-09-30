@@ -133,6 +133,11 @@ namespace Inspiration_International
             services.AddTransient<IRSVPRepo, RSVPRepo>();
             services.AddTransient<ICommentsRepo, CommentsRepo>();
 
+            services.Configure<CookieTempDataProviderOptions>(options =>
+            {
+                options.Cookie.IsEssential = true;
+            });
+
             services.AddDistributedMemoryCache();
 
             services.AddSession(options =>

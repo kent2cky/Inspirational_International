@@ -199,26 +199,52 @@
 --     WHERE @UserID=UserID
 -- END
 
+-- Create a stored procedure to
+-- retrieve a single RSVP on the RSVP table using the userId and dateFor
 
--- EXEC dbo.spGetSingleRSVPByUserId 'kentuckymaduka@yahoo.com';
--- GO
+
+-- CREATE PROCEDURE spGetSingleRSVPByUserIdAndDateFor
+--     (
+--     @UserID [NVARCHAR](126),
+--     @Date_For [DATETIME]
+
+-- )
+-- AS
+-- BEGIN
+--     SELECT *
+--     FROM RSVP
+--     WHERE @UserID=UserID AND cast    -- -- this works by casting the dateTime saved in the table
+-- ([Date_For] as date ) = @date_For    -- -- to just date. So query this table with only date value eg '29-09-09'.   
+-- END
+
+
 
 -- DROP PROCEDURE dbo.spSubmitRSVP;
 -- GO
 
--- DECLARE @datefor DATETIME
--- DECLARE @name NVARCHAR(MAX)
--- DECLARE @Contact NVARCHAR(MAX)
--- DECLARE @Did_Attend NVARCHAR(MAX)
+DECLARE @datefor DATETIME
+DECLARE @name NVARCHAR(MAX)
+DECLARE @Contact NVARCHAR(MAX)
+DECLARE @Did_Attend NVARCHAR(MAX)
 
--- SET @datefor = '2020-01-08T10:29:34';
--- SET @name = 'Kent2cky@Dev';
--- SET @Did_Attend = 1;
+SET @datefor = '09/29/19';
+SET @name = 'Kent2cky@Dev';
+SET @Did_Attend = 1;
 
 -- EXEC dbo.spUpdateRSVP 5, @datefor, @name, @Did_Attend
 
 -- EXEC dbo.spSubmitRSVP @datefor, @name, @Did_Attend ;
+
+-- EXEC spGetRSVPsByDate @datefor
+
+-- EXEC dbo.spGetSingleRSVPByUserIdAndDateFor '918dc8f7-3a1f-4772-da3a-08d73aa60776', @datefor;
+
 -- GO
+
+DELETE
+from RSVP
+-- WHERE UserID = '918dc8f7-3a1f-4772-da3a-08d73aa60776' AND cast ([Date_For] as date ) = @datefor
+GO
 
 
 -- DROP PROCEDURE dbo.spSubmitRSVP;

@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Inspiration_International.Models
@@ -12,6 +14,8 @@ namespace Inspiration_International.Models
         public bool RSVP { get; set; }
         public string FirstName { get; set; }
         public string PictureData { get; set; }
+        public DateTime DateOfNextClass { get; set; }
 
     }
+
 }
