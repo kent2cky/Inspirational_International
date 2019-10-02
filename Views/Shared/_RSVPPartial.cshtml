@@ -4,9 +4,9 @@
     <div class="rsvp-cover">
         <div id="will-you-rsvp" style="display: none;">
             <p>
-                <h4 class="salute">Hey</h4>
+                <span class="salute">Hey</span>
                 <br>
-                <h4 class="showNextClass">Join us in our next class </h4>
+                <span class="showNextClass">Join us in our next class </span>
                 <br>
                 RSVP Here.
                 <button id="rsvp-click"  class=".rsvp-ok" asp-action="Index" asp-controller="RSVP">Okay</button>
@@ -34,7 +34,7 @@
                 <p>
                     <span>Hey</span>
                     <br>
-                    <span class="showNextClass"> We are expecting you in the class on!</span>
+                    <span class="showNextClass"> We are expecting you in the class</span>
                 </p>
         </div>
 
@@ -45,109 +45,202 @@
         var rsvpDone = document.getElementById('rsvp-done');
         var showNextClass = document.getElementsByClassName('showNextClass');
         var nextClass = document.createElement('span');
-        var rsvpModel = @Html.Raw(Json.Serialize(Model)); // Get hold of the view model as a js object.
-        console.log(rsvpModel)
-        var dateWithoutTime = rsvpModel.dateOfNextClass.split('T')[0];
-        console.log('Split date:' + dateWithoutTime)
-        var localDate = new Date().toISOString();
-        var splitLocalDate = localDate.split('T')[0];
-        console.log(splitLocalDate);
+        var nextClass = document.createElement('span');
+        
+        var rsvpModel = @Html.Raw(Json.Serialize(Model)); // Get hold of the view model converted to a js object.
+            console.log(rsvpModel);
 
-        var date = new Date(dateWithoutTime + 'T00:00:00Z').toLocaleDateString(undefined, {
-            day: 'numeric',
-            month: 'short',
-            year: 'numeric'
-        });
-        var day = new Date(splitLocalDate + 'T00:00:00Z').toLocaleDateString (undefined, {
-            day: 'numeric',
-            month: 'short',
-            year: 'numeric'
-        });
+        //var userData = getViewModel();
+       // console.log('User data: ' + userData._rsvp);
 
-        if(date === day){
-        nextClass.innerText = 'today at 1:00pm.';
-        l = showNextClass.length;
-        console.log(l);
-            for(i = 0; i < l; i++)
-            {
-            showNextClass[i].appendChild(nextClass);
-            console.log(showNextClass)
-            }
-        } else {
-                    nextClass.innerText = ' ' + date;
-                    showNextClass[0].appendChild(nextClass);
-                    console.log(showNextClass)
+//sessionStorage.clear();
+//localStorage.clear();
+ // Save user data
+  //setLocalStorage(rsvpModel);// !== 0)
+    //{
+        //sessionStorage.removeItem('InspIntData');
+    //setSession(userData);
+    //}
+//getUsrData();
+
+function getViewModel(){
+   try{
+        localStorage = window['localStorage'];
+        if(localStorage.length !== 0){
+            var viewModel = JSON.parse(localStorage.getItem('InspIntData'));
+            console.log('Retrieved from localStorage: ' + viewModel._FN);
+            return viewModel;
         }
+        else if(sessionStorage.length !== 0){
+            var viewModel = JSON.parse(sessionStorage.getItem('InspIntData'));
+            console.log('Retrieved from sessionStorage: ' + viewModel._FN);
+            return viewModel;
+        }
+        else{
+            
+            var request = new XMLHttpRequest();
+            request.responseType = 'text';
+            request.open('GET', '/Home/GetViewModel?ls=true', true);
+            request.send();
+            request.onreadystatechange = function()
+            {
+                if (request.readystate === 4){
+                    if(request.status === 200 || request.status === 201)
+                    {
+                        var viewModel = JSON.parse(request.responseText);
+                        console.log(viewModel)
+                    }
+                }
+            }
+            
+
+            viewModel = request.responseText;
+            console.log(viewModel)
+            return viewModel;
 
 
+            
+           // var usrData = @Html.Raw(Json.Serialize(Model)); // Get hold of the view model converted to a js object.
+            //console.log(usrData);
+            //return usrData;
+        }
+   }
+   catch(error)
+   {
+       console.error('My own error log: ' + error);
+   }
+}
 
 
-        //if(setLocalStorage(rsvpModel) !== 0)
-        //{
-        //    setSession(rsvpModel);
-       // }
+// Dynamically append date of next class.       
+//appendDateOfNextClass(rsvpModel.dateOfNextClass);
 
-        function setLocalStorage(data){
-            if(data === null){
-                
-                console.log('Please supply data to set session storage with.')
+// Display appropriate rsvp view.
+
+//display(rsvpModel);
+
+function appendDateOfNextClass(dateOfNextClass){
+    
+    // Check if parameter is a valid date data
+    if(!dateOfNextClass || new Date(dateOfNextClass).toString() === 'Invalid Date'){
+        return 1;
+    }
+        // Replace the time part so you can effectively compare both dates
+        var splitModelDate = dateOfNextClass.split('T')[0];
+        var splitLocalDate = new Date().toISOString().split('T')[0];
+
+        var dateOfClass = new Date(splitModelDate + 'T00:00:00Z').toLocaleDateString(undefined, {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric'
+        });
+        var today = new Date('2019-09-30' + 'T00:00:00Z').toLocaleDateString (undefined, {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric'
+        });
+
+
+        if(dateOfClass === today){
+                nextClass.innerText = ' today at 1:00pm.'; // replace date with 'today' ....
+                showNextClass[0].appendChild(nextClass.cloneNode(true));
+                showNextClass[1].appendChild(nextClass);
+            return 1;
+        } else {
+                   nextClass.innerText = ' on ' + dateOfClass + '.';
+                   showNextClass[0].appendChild(nextClass.cloneNode(true));
+                   showNextClass[1].appendChild(nextClass);
+                   return 1;
+        }
+}
+
+
+function setLocalStorage(data){
+    if(!data){
+        
+        console.log('Please supply data to set session storage with.')
+            return 1;
+        }
+        console.log('Saving data to local storage......');
+    try { 
+            var localStorage = window['localStorage'];
+
+            var usrData = {
+                _rsvp: data.rsvp,
+                _FN: data.firstName,
+                _dateOfNextClass: data.dateOfNextClass,
+                _hasPN: data.phoneNumber
+            };
+            localStorage.setItem('InspIntData', JSON.stringify(usrData));
+            console.log('Data stored in localStorage.');
+            // returns 0 if successful
+            return 0
+    }
+    catch(error) {
+            console.error(error);
+            //return 1 if not successful
+            return 1
+    }
+
+}
+
+function setSession(data) {
+                // Parameter check.
+                if(!data)
+                {
+                    console.log('Please supply data to set session storage with.');
                     return 1;
                 }
-                console.log('Saving data to local storage......');
-            try { 
-                    var localStorage = window['localStorage'];
-                    localStoage.setItem("_rsvp", data.rsvp);
-                    localStorage.setItem("_FN", data.firstName);
-                    localStorage.setItem("_dateOfNextClass", data.dateOfNextClass);
+            console.log('Setting session storage instead.......');
+            try{
 
-                    console.log('Data stored in localStorage.');
-                    // returns 0 if successful
-                    return 0
+            var usrData = {
+                _rsvp: data._rsvp,
+                _FN: data._FN,
+                _dateOfNextClass: data._dateOfNextClass,
+                _hasPN: data._hasPN
+            };
+            sessionStorage.setItem('InspIntData', JSON.stringify(usrData));
+            console.log('Data stored in session storage.');
+            
+            //returns 0 if successful
+            return 0;
             }
-            catch(error) {
-                    console.error(error);
-                    //return 1 if not successful
-                    return 1
+            catch(error){
+                console.error('Error setting session data.....' + error);
             }
-
-        }
-
-        function display(model){
-
-                    //if(model.rsvp === true){
-                        console.log('kent2cky');
-                       // if(model.phoneNumber === 'f'){
-                            console.log('Does he have phoneNumber? ' + model.phoneNumber);
-                          //  rsvpDone.style.display = 'none';
-                            getPhoneNumber.style.display = 'block';
-                      //      return;
-                      //  }
-                        //rsvpDone.style.display = 'none';
-                        willYouRSVP.style.display = 'block';
-                        return;
-                    //}
-        }   
+}
 
 
-        function setSession(data) {
-                        
-                        if(data === null)
-                        {
-                            console.log('Please supply data to set session storage with.');
-                            return 1;
-                        }
-                    console.log('Setting session storage instead.......');
-                    sessionStorage.setItem('_FN', data.firstName);
-                    sessionStorage.setItem('_rsvp', data.rsvp);
-                    sessionStorage.setItem('dateOfNextClass', data.dateOfNextClass);
-                    console.log('Data stored in session storage.');
-                    //returns 0 if successful
+
+function display(model){
+
+    if(!model){ console.log('Supply a valid model data.'); return 1;}
+
+    try {
+            if(model._rsvp === true){
+                console.log(model._rsvp);
+                if(model._hasPN === 'false'){ // NOTE: model._hasPN is a string not a bool
+                    console.log('Does he have phoneNumber? ' + model._hasPN);
+                    rsvpDone.style.display = 'none';
+                    getPhoneNumber.style.display = 'block';
                     return 0;
-                    }
-
-
-
-    display(rsvpModel);
+                }
+                rsvpDone.style.display = 'none';
+                willYouRSVP.style.display = 'block';
+                return 0;
+            }
+            else{
+                return 1;
+            }
+    }
+    catch(error){
+        console.error(error + model);
+        return 1;
+    }
+}   
+    
+    
         </script>
     </div>
 </aside>

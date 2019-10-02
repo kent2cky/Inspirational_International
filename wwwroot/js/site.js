@@ -140,3 +140,119 @@ $("#rsvp-click").click(() => {
 
 //   return;
 // }
+
+function setLocalStorage(data) {
+  if (!data) {
+
+    console.log('Please supply data to set session storage with.')
+    return 1;
+  }
+  console.log('Saving data to local storage......');
+  try {
+    var localStorage = window['localStorage'];
+
+    var usrData = {
+      _rsvp: data.rsvp,
+      _FN: data.firstName,
+      _dateOfNextClass: data.dateOfNextClass,
+      _hasPN: data.phoneNumber
+    };
+    localStorage.setItem('InspIntData', JSON.stringify(usrData));
+    console.log('Data stored in localStorage.');
+    // returns 0 if successful
+    return 0
+  } catch (error) {
+    console.error(error);
+    //return 1 if not successful
+    return 1
+  }
+
+}
+
+
+function setSession(data) {
+  // Parameter check.
+  if (!data) {
+    console.log('Please supply data to set session storage with.');
+    return 1;
+  }
+  console.log('Setting session storage instead.......');
+  try {
+
+    var usrData = {
+      _rsvp: data.rsvp,
+      _FN: data.firstName,
+      _dateOfNextClass: data.dateOfNextClass,
+      _hasPN: data.phoneNumber
+    };
+    sessionStorage.setItem('InspIntData', JSON.stringify(usrData));
+    console.log('Data stored in session storage.');
+
+    //returns 0 if successful
+    return 0;
+  } catch (error) {
+    console.error('Error setting session data.....' + error);
+  }
+}
+
+
+
+
+function requestViewModelFromServer(callback) {
+  try {
+    $.ajax({
+      url: '/Home/GetViewModel',
+      type: "GET",
+      success: function (response) {
+        console.log("from success. %0", response);
+        callback(response);
+      },
+      error: function (response) {
+        console.log(response.responseText);
+      }
+    });
+  } catch (error) {
+    console.error('My own error log: ' + error);
+  }
+}
+
+
+
+function getViewModel() {
+  try {
+    localStorage = window['localStorage'];
+    if (localStorage.length !== 0) {
+      var viewModel = JSON.parse(localStorage.getItem('InspIntData'));
+      console.log('Retrieved from localStorage: ' + viewModel._FN);
+      return viewModel;
+    } else if (sessionStorage.length !== 0) {
+      var viewModel = JSON.parse(sessionStorage.getItem('InspIntData'));
+      console.log('Retrieved from sessionStorage: ' + viewModel._FN);
+      return viewModel;
+    } else {
+      return null;
+    }
+  } catch (error) {
+    return null;
+  }
+}
+
+
+
+
+$(window).on('load', function () {
+
+  var viewModel = getViewModel();
+
+  if (viewModel === null) {
+
+    requestViewModelFromServer(function (response) {
+      console.log('response from the callback ' + response);
+      if (setLocalStorage(response) !== 0) {
+        setSession(response);
+      }
+      window.location.reload(true);
+    });
+  }
+  console.log('ViewModel after every every: ' + viewModel._FN);
+});

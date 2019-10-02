@@ -68,7 +68,7 @@ namespace Inspiration_International.Controllers
 
                 //var phoneNumber = TempData["_PN"].ToString();
                 rsvpViewModel.FirstName = "Kennis";//TempData["_FN"].ToString() ?? "";
-                rsvpViewModel.RSVP = false;//Request.Cookies["_rsvp"] == "true" ? true : false;
+                rsvpViewModel.RSVP = true;//Request.Cookies["_rsvp"] == "true" ? true : false;
                 rsvpViewModel.PhoneNumber = "true";//phoneNumber == "true" ? phoneNumber : "false";
                 rsvpViewModel.DateOfNextClass = dateOfNextClass;
 
@@ -82,14 +82,21 @@ namespace Inspiration_International.Controllers
 
         }
 
-        public async Task<IActionResult> SetSession([FromQuery] string LS)
+        [HttpGet]
+        public async Task<JsonResult> GetViewModel([FromQuery] string ls)
         {
-            if (ModelState.IsValid)
+            var viewModel = new RSVPViewModel
             {
-                HttpContext.Session.SetString("hasPhoneNumber", LS);
-                return Ok();
-            }
-            return BadRequest();
+                RSVP = false,
+                PhoneNumber = "false",
+                FirstName = "Kenny",
+                PictureData = null,
+                DateOfNextClass = DateTime.Now.Next(DayOfWeek.Sunday)
+            };
+            var viewM = JsonConvert.SerializeObject(viewModel);
+            Console.WriteLine("\n\n\n\n\n\n\n\n" + viewM + "\n\n\n\n\n\n\n\n\n");
+            return Json(viewModel);
+
         }
 
         public IActionResult Privacy()
