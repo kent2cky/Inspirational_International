@@ -6,7 +6,7 @@ function Helloworld() {
   console.log("Hello from Inspiration International!!");
 }
 
-$("div.nav_handle-container").click(() => {
+$("div.nav_handle-container").click(function () {
   if ($(".toggled").is(":visible")) {
     $(".toggled").hide(500);
     console.log("Show clicked!");
@@ -16,140 +16,36 @@ $("div.nav_handle-container").click(() => {
   console.log("Hide clicked!");
 });
 
-$(".rsvp-ok").click(() => {
-  $(".rsvp-input-container").css("display", "flex");
-  $(".rsvp-cover").hide();
-  console.log("Show clicked!");
-});
-
-
-// If user declines submitting her/his phoneNumber
-$("#decline-submit").click(
-  () => {
-    console.log("Decline button clicked....");
-    alert("There would be no way to contact you without your phone number.");
-    localStorage.setItem("_PNdeclined", "True");
-    $(".rsvp-cover>fieldset").replaceWith(
-      "Thanks for the RSVP. See you on Sunday."
-    );
-  }
-);
-
-
-
-// Submit RSVP
-$("#rsvp-click").click(() => {
-  var data = JSON.stringify({
-    RSVP: true,
-    PhoneNumber: 23456789123,
-    FirstName: " sdsds",
-    PictureData: "23456789123"
-  });
+function sendRSVPtoServer(callback) {
   $.ajax({
     url: "/RSVP/SubmitRSVP",
-    type: "POST",
-    dataType: "html",
-    data: data,
-    contentType: "application/json; charset=utf-8",
-    processData: false,
-    success: (response) => {
-      console.log("from success. %0", JSON.stringify(response));
-      //alert(response);
-      $(".rsvp-cover>p").replaceWith(response);
+    type: "GET",
+    success: function (response) {
+      console.log("from success: ", JSON.stringify(response));
+      callback(response);
     },
-    error: (response) => {
-      console.log(response);
-      $(".rsvp-cover").append(response.responseText);
+    error: function (response) {
       if (response.status == 401) {
         console.log("Redirecting to login page......");
         window.location.href =
           "/Identity/Account/Login?ReturnUrl=%2FRSVP%2FSubmitRSVPs";
-        console.log(response.statusText);
       } else {
-        alert("Error sending your RSVP. Please try again later.");
+        console.log("From error: " + response);
+        callback(response);
       }
-      console.log(response.responseText);
+      console.log("From error: " + response.responseText);
     }
   });
-});
-
-
-
-
-// Submit rsvp form
-// $("#submit-rsvp").click(function () {
-//   // Hide the form view
-//   $(".rsvp-input-container").css("display", "none");
-//   //Show the rsvp-cover view.
-//   $(".rsvp-cover").show();
-//   console.log("Submitting the form....");
-//   var obj = $("#rsvp-form").serializeToJSON();
-
-//   var payload = JSON.stringify(obj);
-//   console.log(payload);
-
-//   $.ajax({
-//     url: "/RSVP/SubmitRSVP",
-//     type: "POST",
-//     dataType: "text",
-//     contentType: "application/json; charset=utf-8",
-//     data: payload,
-//     processData: false,
-//     success: function (response) {
-//       console.log("from success. %0", JSON.stringify(response));
-//       alert(response);
-//     },
-//     error: function (response) {
-//       console.log(response);
-//       if (response.status == 401) {
-//         console.log("Redirecting to login page......");
-//         //window.location.href = "/Identity/Account/Login?ReturnUrl=%2FHome%2FIndex?RSVP=true";
-//         console.log(response.statusText);
-//       }
-//       console.log(response.responseText);
-//     }
-//   });
-
-//   console.error("Form submitted!");
-
-//   return;
-// });
-
-// function onSignIn(googleUser) {
-//   var vv = googleUser.getAuthResponse().id_token;
-//   console.log("This is the google id_token: " + vv);
-//   var id_token = {
-//     "id_token": vv
-//   }
-//   var id_token_string = JSON.stringify(id_token)
-//   console.log("This is data: %0", id_token_string);
-//   $.ajax({
-//     url: "/Identity/GoogleTokenSignIn",
-//     type: "POST",
-//     dataType: 'text/json; charset=utf-8 ',
-//     data: id_token_string,
-//     contentType: 'text/json; charset=utf-8',
-//     processData: false,
-//     success: function (response) {
-//       console.log("from success. %0", JSON.stringify(response));
-//     },
-//     error: function (response) {
-//       console.log("from error. %0", JSON.stringify(response));
-//     }
-//   });
-
-//   return;
-// }
+}
 
 function setLocalStorage(data) {
   if (!data) {
-
-    console.log('Please supply data to set session storage with.')
+    console.log("Please supply data to set session storage with.");
     return 1;
   }
-  console.log('Saving data to local storage......');
+  console.log("Saving data to local storage......");
   try {
-    var localStorage = window['localStorage'];
+    var localStorage = window["localStorage"];
 
     var usrData = {
       _rsvp: data.rsvp,
@@ -157,51 +53,45 @@ function setLocalStorage(data) {
       _dateOfNextClass: data.dateOfNextClass,
       _hasPN: data.phoneNumber
     };
-    localStorage.setItem('InspIntData', JSON.stringify(usrData));
-    console.log('Data stored in localStorage.');
+    localStorage.setItem("InspIntData", JSON.stringify(usrData));
+    console.log("Data stored in localStorage.");
     // returns 0 if successful
-    return 0
+    return 0;
   } catch (error) {
     console.error(error);
     //return 1 if not successful
-    return 1
+    return 1;
   }
-
 }
-
 
 function setSession(data) {
   // Parameter check.
   if (!data) {
-    console.log('Please supply data to set session storage with.');
+    console.log("Please supply data to set session storage with.");
     return 1;
   }
-  console.log('Setting session storage instead.......');
+  console.log("Setting session storage instead.......");
   try {
-
     var usrData = {
       _rsvp: data.rsvp,
       _FN: data.firstName,
       _dateOfNextClass: data.dateOfNextClass,
       _hasPN: data.phoneNumber
     };
-    sessionStorage.setItem('InspIntData', JSON.stringify(usrData));
-    console.log('Data stored in session storage.');
+    sessionStorage.setItem("InspIntData", JSON.stringify(usrData));
+    console.log("Data stored in session storage.");
 
     //returns 0 if successful
     return 0;
   } catch (error) {
-    console.error('Error setting session data.....' + error);
+    console.error("Error setting session data....." + error);
   }
 }
-
-
-
 
 function requestViewModelFromServer(callback) {
   try {
     $.ajax({
-      url: '/Home/GetViewModel',
+      url: "/Home/GetViewModel",
       type: "GET",
       success: function (response) {
         console.log("from success. %0", response);
@@ -212,22 +102,22 @@ function requestViewModelFromServer(callback) {
       }
     });
   } catch (error) {
-    console.error('My own error log: ' + error);
+    console.error("My own error log: " + error);
   }
 }
 
-
-
 function getViewModel() {
   try {
-    localStorage = window['localStorage'];
+    localStorage = window["localStorage"];
     if (localStorage.length !== 0) {
-      var viewModel = JSON.parse(localStorage.getItem('InspIntData'));
-      console.log('Retrieved from localStorage: ' + viewModel._FN);
+      var viewModel = JSON.parse(localStorage.getItem("InspIntData"));
+      console.log("Retrieved from localStorage: " + viewModel._dateOfNextClass);
       return viewModel;
     } else if (sessionStorage.length !== 0) {
-      var viewModel = JSON.parse(sessionStorage.getItem('InspIntData'));
-      console.log('Retrieved from sessionStorage: ' + viewModel._FN);
+      var viewModel = JSON.parse(sessionStorage.getItem("InspIntData"));
+      console.log(
+        "Retrieved from sessionStorage: " + viewModel._dateOfNextClass
+      );
       return viewModel;
     } else {
       return null;
@@ -237,22 +127,179 @@ function getViewModel() {
   }
 }
 
+function appendDateOfNextClass(dateOfNextClass) {
+  // Check if parameter is a valid date data
+  if (
+    !dateOfNextClass ||
+    new Date(dateOfNextClass).toString() === "Invalid Date"
+  ) {
+    return 1; //Returns 1 if error or unsuccessful
+  }
 
+  var showNextClass = document.getElementsByClassName("showNextClass");
+  var nextClass = document.createElement("span");
 
+  // Replace the time part so you can effectively compare both dates
+  var splitModelDate = dateOfNextClass.split("T")[0];
+  var splitLocalDate = new Date().toISOString().split("T")[0];
 
-$(window).on('load', function () {
+  var dateOfClass = new Date(splitModelDate + "T00:00:00Z").toLocaleDateString(
+    undefined, // undefined allows the browser to set local timezone and calculate appropriate offsets
+    {
+      day: "numeric",
+      month: "short",
+      year: "numeric"
+    }
+  );
+  var today = new Date(splitLocalDate + "T00:00:00Z").toLocaleDateString(
+    undefined, // undefined allows the browser to set local timezone and calculate appropriate offsets
+    {
+      day: "numeric",
+      month: "short",
+      year: "numeric"
+    }
+  );
 
+  if (dateOfClass === today) {
+    nextClass.innerText = " today at 1:00pm."; // replace date with 'today' ....
+    showNextClass[0].appendChild(nextClass.cloneNode(true));
+    showNextClass[1].appendChild(nextClass);
+    return 0; // Returns 0 if successful
+  } else {
+    nextClass.innerText = " on " + dateOfClass + ".";
+    showNextClass[0].appendChild(nextClass.cloneNode(true));
+    showNextClass[1].appendChild(nextClass);
+    return 0; // Returns 0 if successful
+  }
+}
+
+function appendUsersFirstName(firstName) {
+  if (firstName === null) {
+    return 1; //Returns 1 if error or unsuccessful
+  }
+
+  try {
+    var salute = document.getElementsByClassName("salute")
+    salute[0].innerText = "Hey " + firstName + ",";
+    salute[1].innerText = "Hey " + firstName + ",";
+  } catch (error) {
+    console.error(error);
+    return 1;
+  }
+}
+
+function display(model) {
+  if (!model) {
+    console.log("Supply a valid model data.");
+    return 1;
+  }
+
+  var willYouRSVP = document.getElementById("will-you-rsvp");
+  var getPhoneNumber = document.getElementById("get-phoneNumber");
+  var rsvpDone = document.getElementById("rsvp-done");
+
+  try {
+    if (model._rsvp === true) {
+      console.log(model._rsvp);
+      if (model._hasPN === "false") {
+        // NOTE: model._hasPN is a string not a bool
+        console.log("Does he have phoneNumber? " + model._hasPN);
+        willYouRSVP.style.display = "none";
+        rsvpDone.style.display = "none";
+        getPhoneNumber.style.display = "block";
+        return 0;
+      }
+      getPhoneNumber.style.display = "none";
+      willYouRSVP.style.display = "none";
+      rsvpDone.style.display = "block";
+      return 0;
+    } else {
+      rsvpDone.style.display = "none";
+      getPhoneNumber.style.display = "none";
+      willYouRSVP.style.display = "block";
+      return 1;
+    }
+  } catch (error) {
+    console.error(error + model);
+    return 1;
+  }
+}
+
+$(".rsvp-cover").ready(function () {
+  // Get view model from the browser local storage or session storage
   var viewModel = getViewModel();
 
+  // If nothing is stored in session or local storage then request the data from server
+  // and save them in the session or local storage
   if (viewModel === null) {
-
     requestViewModelFromServer(function (response) {
-      console.log('response from the callback ' + response);
+      // Set response to local storage
       if (setLocalStorage(response) !== 0) {
+        // Set response to session storage if not successfully set in local storage
         setSession(response);
       }
-      window.location.reload(true);
+      // Reload the page so we can access the stored data.
+      window.location.reload();
     });
   }
-  console.log('ViewModel after every every: ' + viewModel._FN);
+
+  //Dynamically append users firstName
+  appendUsersFirstName(viewModel._FN);
+  // Dynamically append date of next class.
+  appendDateOfNextClass(viewModel._dateOfNextClass);
+  // Display appropriate rsvp view
+  display(viewModel);
+});
+
+
+//Overwrite user data on sign out
+$("#sign-out-btn").click(function () {
+  var newModel = getViewModel();
+  console.log("This is old rsvp status: " + newModel._rsvp);
+  // Set all data to default except dateOfNextClass
+  newModel._rsvp = false;
+  newModel._FN = null;
+  newModel._hasPN = null;
+  // Save it back to local storage
+  try {
+    localStorage.setItem("InspIntData", JSON.stringify(newModel));
+  } catch (error) {
+    sessionStorage.setItem("InspIntData", JSON.stringify(newModel));
+  }
+});
+
+//Submit RSVP
+$("#rsvp-ok").click(function () {
+  sendRSVPtoServer(function (response) {
+    $(".rsvp-cover>#will-you-rsvp").replaceWith(response);
+    // Get model from local storage
+    var newModel = getViewModel();
+    console.log("This is old rsvp status: " + newModel._rsvp);
+    // Set rsvp to true
+    newModel._rsvp = true;
+    // Save it back to local storage
+    try {
+      localStorage.setItem("InspIntData", JSON.stringify(newModel));
+    } catch (error) {
+      sessionStorage.setItem("InspIntData", JSON.stringify(newModel));
+    }
+    display(newModel);
+  });
+});
+
+// If user declines submitting her/his phoneNumber
+$("#decline-submit").click(function ($event) {
+  $event.preventDefault();
+  // Get model from local storage
+  var newModel = getViewModel();
+  // Set the hasPhoneNumber value to declined
+  newModel._hasPN = "declined";
+  console.log("This is current rsvp status: " + JSON.stringify(newModel));
+  try {
+    var ls = window["localStorage"];
+    ls.setItem("InspIntData", JSON.stringify(newModel));
+  } catch (error) {
+    ls.setItem("InspIntData", JSON.stringify(newModel));
+  }
+  display(newModel);
 });

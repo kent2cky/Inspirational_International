@@ -178,7 +178,7 @@ namespace Inspiration_International.Repositories
 
         public async Task<RSVP> GetSingleRSVPByUserIDAndDateForAsync(string userID, DateTime dateFor)
         {
-            if (userID == string.Empty || dateFor.Date != DateTime.Now.Next(DayOfWeek.Sunday).Date)
+            if (userID == string.Empty)
             {
                 _logger.LogError($"Invalid parameter supplied to RSVPRepo's GetSingleRSVPByUserIDAndDateForAsync. Parameter Value: {userID}\t {dateFor}\n");
                 return null;

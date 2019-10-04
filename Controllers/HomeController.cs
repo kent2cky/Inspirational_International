@@ -60,19 +60,11 @@ namespace Inspiration_International.Controllers
                 // {
                 //     Console.WriteLine($"{comment.CommentID} {comment.Name} said {comment.CommentBody} on {comment.DateTimePosted}\n");
                 // }
-                var rsvpViewModel = new RSVPViewModel();
-
-
-                var dateOfNextClass = DateTime.Now.Next(DayOfWeek.Sunday);
 
 
                 //var phoneNumber = TempData["_PN"].ToString();
-                rsvpViewModel.FirstName = "Kennis";//TempData["_FN"].ToString() ?? "";
-                rsvpViewModel.RSVP = true;//Request.Cookies["_rsvp"] == "true" ? true : false;
-                rsvpViewModel.PhoneNumber = "true";//phoneNumber == "true" ? phoneNumber : "false";
-                rsvpViewModel.DateOfNextClass = dateOfNextClass;
 
-                return View(rsvpViewModel);
+                return View();
             }
             catch (Exception ex)
             {
@@ -85,16 +77,42 @@ namespace Inspiration_International.Controllers
         [HttpGet]
         public async Task<JsonResult> GetViewModel([FromQuery] string ls)
         {
-            var viewModel = new RSVPViewModel
+            var viewModel = new RSVPViewModel();
+            if (User.Identity.IsAuthenticated)
             {
-                RSVP = false,
-                PhoneNumber = "false",
-                FirstName = "Kenny",
-                PictureData = null,
-                DateOfNextClass = DateTime.Now.Next(DayOfWeek.Sunday)
-            };
-            var viewM = JsonConvert.SerializeObject(viewModel);
-            Console.WriteLine("\n\n\n\n\n\n\n\n" + viewM + "\n\n\n\n\n\n\n\n\n");
+                var user = await _userManager.FindByNameAsync(User.Identity.Name);
+
+                // Check if the user has RSVPd for the next class.
+                // and if so get the user's record.
+                var rsvp = await _rsvpRepo.GetSingleRSVPByUserIDAndDateForAsync(
+                            user.Id.ToString(),
+                            DateTime.Now.Next(DayOfWeek.Sunday)
+                        );
+                //"2019-09-29 13:26:30.483"
+                Console.WriteLine("\n\n\n\n\n\n\n\n This is queried date: " + new DateTime(2019, 09, 29) + "\n\n\n\n\n\n\n\n\n");
+
+
+                var nextClass = DateTime.Now.Next(DayOfWeek.Sunday);
+                Console.WriteLine("\n\n\n\n\n\n\n\n This is NextClass" + nextClass + "\n\n\n\n\n\n\n\n\n");
+
+
+                // If user is in list and the date is date of next class
+                // set RSVP to true else set it to false
+                if (rsvp != null && (rsvp.DateFor.Date == nextClass.Date))
+                {
+                    viewModel.RSVP = true;
+                }
+                else
+                {
+                    viewModel.RSVP = false;
+                }
+
+                viewModel.PhoneNumber = user.PhoneNumber != null ? "true" : "false";
+                viewModel.FirstName = user.FullName.Split(" ")[0];
+                viewModel.PictureData = null;
+            }
+            viewModel.DateOfNextClass = DateTime.Now.Next(DayOfWeek.Sunday);
+            Console.WriteLine("\n\n\n\n\n\n\n\n" + viewModel + "\n\n\n\n\n\n\n\n\n");
             return Json(viewModel);
 
         }

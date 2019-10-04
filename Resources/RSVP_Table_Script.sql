@@ -222,14 +222,14 @@
 -- DROP PROCEDURE dbo.spSubmitRSVP;
 -- GO
 
-DECLARE @datefor DATETIME
-DECLARE @name NVARCHAR(MAX)
-DECLARE @Contact NVARCHAR(MAX)
-DECLARE @Did_Attend NVARCHAR(MAX)
+-- DECLARE @datefor DATETIME
+-- DECLARE @name NVARCHAR(MAX)
+-- DECLARE @Contact NVARCHAR(MAX)
+-- DECLARE @Did_Attend NVARCHAR(MAX)
 
-SET @datefor = '09/29/19';
-SET @name = 'Kent2cky@Dev';
-SET @Did_Attend = 1;
+-- SET @datefor = '09/29/19';
+-- SET @name = 'Kent2cky@Dev';
+-- SET @Did_Attend = 1;
 
 -- EXEC dbo.spUpdateRSVP 5, @datefor, @name, @Did_Attend
 
@@ -241,10 +241,10 @@ SET @Did_Attend = 1;
 
 -- GO
 
-DELETE
-from RSVP
--- WHERE UserID = '918dc8f7-3a1f-4772-da3a-08d73aa60776' AND cast ([Date_For] as date ) = @datefor
-GO
+-- DELETE
+-- from RSVP
+-- -- WHERE UserID = '918dc8f7-3a1f-4772-da3a-08d73aa60776' AND cast ([Date_For] as date ) = @datefor
+-- GO
 
 
 -- DROP PROCEDURE dbo.spSubmitRSVP;

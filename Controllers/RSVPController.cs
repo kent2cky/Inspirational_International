@@ -42,13 +42,10 @@ namespace Inspiration_International.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        [HttpPost]
-        public async Task<IActionResult> SubmitRSVP([FromBody]RSVPViewModel model = null)
+        [HttpGet]
+        public async Task<IActionResult> SubmitRSVP()
         {
             _logger.LogInformation($"Submitting RSVP from user: {User.Identity.Name}...............\n");
-
-            _logger.LogCritical("RSVPSubmit Hit!!!!\n\n\n\n\n" +
-             model.RSVP + model.PhoneNumber + model.FirstName + model.PictureData);
 
             if (ModelState.IsValid)
             {
@@ -57,26 +54,12 @@ namespace Inspiration_International.Controllers
 
                 // Next(DayOfWeek.Sunday) is an extension method.
                 var dateOfNextClass = DateTime.Now.Next(DayOfWeek.Sunday);
-                var expireTime = new DateTime(
-                    dateOfNextClass.Year,
-                    dateOfNextClass.Month,
-                    dateOfNextClass.Day,
-                    23, 59, 59);
 
                 // Returns 0 if success else 1
                 var response = await _rsvpRepo.SumbitRSVPAsync(dateOfNextClass, user.Id.ToString(), 0);
 
                 if (response == 0)
                 {
-                    // Set cookie if submission is successful
-                    HttpContext.Response.Cookies.Append("_rsvp", "True",
-                        new CookieOptions()
-                        {
-                            Path = "/",
-                            Expires = expireTime,
-                            HttpOnly = true
-                        });
-
                     _logger.LogInformation($"RSVP submitted successfully!!!\n\n\n\n\n\n\n\n");
                     return Ok("RSVP submitted!");
                 }
@@ -85,7 +68,7 @@ namespace Inspiration_International.Controllers
 
                 return BadRequest("RSVP submission not successful. Try again later.");
             }
-
+            // If it made it here then something went wrong
             return BadRequest("Bad Request.");
         }
 

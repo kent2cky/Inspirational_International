@@ -86,46 +86,6 @@ namespace Inspiration_International.Areas.Identity.Pages.Account
             var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
             if (result.Succeeded)
             {
-                var user = await _userManager.FindByEmailAsync(info.Principal.FindFirstValue(ClaimTypes.Email));
-                var PhoneNumber = user.PhoneNumber != null;
-
-                // Check if the user has RSVPd for the next class.
-                // and if so get the user's record.
-                var rsvp = await _rsvpRepo.GetSingleRSVPByUserIDAndDateForAsync(
-                    user.Id.ToString(),
-                    DateTime.Now.Next(DayOfWeek.Sunday)
-                    );
-                var nextSunday = DateTime.Now.Next(DayOfWeek.Sunday);
-
-                if (rsvp != null && (rsvp.DateFor.Date == nextSunday.Date))
-                {
-                    Response.Cookies.Append("_rsvp", "True", new CookieOptions()
-                    {
-                        Path = "/",
-                        HttpOnly = true
-                    });
-                }
-                else
-                {
-                    Response.Cookies.Append("_rsvp", "False", new CookieOptions()
-                    {
-                        Path = "/",
-                        HttpOnly = true
-                    });
-                }
-
-                Response.Cookies.Append("_FN", user.FullName?.Split(" ")[0], new CookieOptions()
-                {
-                    Path = "/",
-                    HttpOnly = true
-                });
-                Response.Cookies.Append("_PN", PhoneNumber.ToString(), new CookieOptions()
-                {
-                    Path = "/",
-                    HttpOnly = true
-                });
-
-
                 _logger.LogInformation("{Name} logged in with {LoginProvider} provider.", info.Principal.Identity.Name, info.LoginProvider);
                 return LocalRedirect(returnUrl);
             }

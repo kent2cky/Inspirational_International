@@ -30,12 +30,11 @@
 
 @section RSVP 
 {
-           @{ await Html.RenderPartialAsync("_RSVPPartial.cshtml");}
+    <partial name="_RSVPPartial"/>
 }
 
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-     }  
+        <partial name="_ValidationScriptsPartial"/>
+        <partial name="_MyScriptsPartial" />
 }

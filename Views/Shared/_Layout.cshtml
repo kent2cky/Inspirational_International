@@ -53,7 +53,7 @@
                             else
                             {
                                 <li class="">
-                                    <a asp-area="Identity" asp-page="/Account/Logout">SIGN OUT</a>
+                                    <a id="sign-out-btn" asp-area="Identity" asp-page="/Account/Logout">SIGN OUT</a>
 
                                 </li>
                             }
@@ -99,15 +99,8 @@
                 crossorigin="anonymous"
                 integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=">
         </script>
-        <script src="~/js/site.js"
-                asp-fallback-src="~/js/site.js"
-                asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal"
-                crossorigin="anonymous"
-                integrity="sha384-xrRywqdh3PHs8keKZN+8zzc5TX0GRTLCcmivcbNJWm2rs5C8PRhcEn3czEjhAO9o">
-        </script>
     </environment>
     @RenderSection("Scripts", required: false)
-    <script src="~/js/site.js" asp-append-version="true"></script>
      <!-- <script id="__bs_script__">//<![CDATA[
     document.write("<script async src='http://HOST:3000/browser-sync/browser-sync-client.js?v=2.26.7'><\/script>".replace("HOST", location.hostname));
 //]]></script> -->

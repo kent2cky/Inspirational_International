@@ -86,28 +86,6 @@ namespace Inspiration_International.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");
-                    var user = await _userManager.FindByEmailAsync(Input.Email);
-                    // Check if the user has a phone number.
-                    TempData["_PN"] = user.PhoneNumber != null ? "true" : "false";
-                    TempData["_FN"] = user.FullName.Split(" ")[0];
-
-                    // Check if the user has RSVPd for the next class.
-                    // and if so get the user's record.
-                    var rsvp = await _rsvpRepo.GetSingleRSVPByUserIDAndDateForAsync(
-                        user.Id.ToString(),
-                        DateTime.Now.Next(DayOfWeek.Sunday)
-                   );
-                    var nextSunday = DateTime.Now.Next(DayOfWeek.Sunday);
-
-                    if (rsvp != null && (rsvp.DateFor.Date == nextSunday.Date))
-                    {
-                        TempData["rsvp"] = "true";
-                    }
-                    else
-                    {
-                        TempData["rsvp"] = "false";
-                    }
-
                     return LocalRedirect(returnUrl);
                 }
                 if (result.RequiresTwoFactor)
@@ -122,6 +100,7 @@ namespace Inspiration_International.Areas.Identity.Pages.Account
                 else
                 {
                     ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
                     return Page();
                 }
             }
