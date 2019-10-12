@@ -1,4 +1,7 @@
-﻿using System;
+﻿// using System;
+// using Microsoft.AspNetCore.Identity;
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -15,10 +18,12 @@ using Inspiration_International.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Inspiration_International.Helpers;
-using Newtonsoft.Json;
+using Microsoft.Extensions.Logging;
+using System.Text;
 
 namespace Inspiration_International.Controllers
 {
+
     public class HomeController : Controller
     {
         public IConfiguration _configuration { get; set; }
@@ -27,15 +32,18 @@ namespace Inspiration_International.Controllers
         public IArticlesRepo _articlesRepo { get; set; }
         public IRSVPRepo _rsvpRepo { get; set; }
         public ICommentsRepo _commentsRepo { get; set; }
+        public ILogger<HomeController> _logger { get; set; }
         public HomeController(IArticlesRepo articlesRepo, IRSVPRepo rSVPRepo, UserManager<ApplicationUser> userManager,
-                SignInManager<ApplicationUser> signInManager, ICommentsRepo commentsRepo)
+                SignInManager<ApplicationUser> signInManager, ILogger<HomeController> logger, ICommentsRepo commentsRepo)
         {
             _articlesRepo = articlesRepo;
             _rsvpRepo = rSVPRepo;
             _commentsRepo = commentsRepo;
             _userManager = userManager;
             _signInManager = signInManager;
+            _logger = logger;
         }
+
         public async Task<IActionResult> Index()
         {
             try
@@ -55,11 +63,16 @@ namespace Inspiration_International.Controllers
                 // .GetSingleRSVPByIDAsync(1);
                 // Console.WriteLine($"{v.DidAttend}, {v.Name}, {v.DateFor}");
                 // .GetAllRSVPsAsync();
-                //.GetArticlesByDatePostedAsync(Convert.ToDateTime("2019-02-10"));
-                // foreach (var comment in v)
-                // {
-                //     Console.WriteLine($"{comment.CommentID} {comment.Name} said {comment.CommentBody} on {comment.DateTimePosted}\n");
-                // }
+
+                var contacts = await _rsvpRepo.GetAllRSVPWithTheirContacts(Convert.ToDateTime("2019-10-13"));
+                var subject = new StringBuilder($"RSVPs for the tomorrows class {DateTime.Now.Next(DayOfWeek.Sunday)}");
+                var message = new StringBuilder("<div>These are the contacts of the people that signed up for tomorrows class</div>\n");
+                message.AppendLine("\t\tEmail Address\t\tPhone Number");
+                foreach (var contact in contacts)
+                {
+                    message.AppendLine($"<div>{contact.Item2}\t\t{contact.Item3}</div>");
+                }
+                Console.WriteLine($"\n\n{message.ToString()}.\n\n\n\n\n\n");
 
 
                 //var phoneNumber = TempData["_PN"].ToString();
@@ -78,43 +91,55 @@ namespace Inspiration_International.Controllers
         public async Task<JsonResult> GetViewModel([FromQuery] string ls)
         {
             var viewModel = new RSVPViewModel();
-            if (User.Identity.IsAuthenticated)
+            if (ModelState.IsValid)
             {
-                var user = await _userManager.FindByNameAsync(User.Identity.Name);
-
-                // Check if the user has RSVPd for the next class.
-                // and if so get the user's record.
-                var rsvp = await _rsvpRepo.GetSingleRSVPByUserIDAndDateForAsync(
-                            user.Id.ToString(),
-                            DateTime.Now.Next(DayOfWeek.Sunday)
-                        );
-                //"2019-09-29 13:26:30.483"
-                Console.WriteLine("\n\n\n\n\n\n\n\n This is queried date: " + new DateTime(2019, 09, 29) + "\n\n\n\n\n\n\n\n\n");
-
-
-                var nextClass = DateTime.Now.Next(DayOfWeek.Sunday);
-                Console.WriteLine("\n\n\n\n\n\n\n\n This is NextClass" + nextClass + "\n\n\n\n\n\n\n\n\n");
-
-
-                // If user is in list and the date is date of next class
-                // set RSVP to true else set it to false
-                if (rsvp != null && (rsvp.DateFor.Date == nextClass.Date))
+                if (User.Identity.IsAuthenticated)
                 {
-                    viewModel.RSVP = true;
-                }
-                else
-                {
-                    viewModel.RSVP = false;
+                    var user = await _userManager.FindByNameAsync(User.Identity.Name);
+
+                    // Check if the user has RSVPd for the next class.
+                    // and if so get the user's record.
+                    var rsvp = await _rsvpRepo.GetSingleRSVPByUserIDAndDateForAsync(
+                                user.Id.ToString(),
+                                DateTime.Now.Next(DayOfWeek.Sunday)
+                            );
+
+                    var nextClass = DateTime.Now.Next(DayOfWeek.Sunday);
+
+                    // If user is in list and the date is date of next class
+                    // set RSVP to true else set it to false
+                    if (rsvp != null && (rsvp.DateFor.Date == nextClass.Date))
+                    {
+                        viewModel.RSVP = true;
+                    }
+                    else
+                    {
+                        viewModel.RSVP = false;
+                    }
+
+                    viewModel.PhoneNumber = user.PhoneNumber != null ? "true" : "false";
+                    viewModel.FirstName = user.FullName.Split(" ")[0];
+                    viewModel.PictureData = null;
                 }
 
-                viewModel.PhoneNumber = user.PhoneNumber != null ? "true" : "false";
-                viewModel.FirstName = user.FullName.Split(" ")[0];
-                viewModel.PictureData = null;
+                viewModel.DateOfNextClass = DateTime.Now.Next(DayOfWeek.Sunday);
+                Console.WriteLine("\n\n\n\n\n\n\n\n" + viewModel + "\n\n\n\n\n\n\n\n\n");
+                return Json(viewModel);
             }
-            viewModel.DateOfNextClass = DateTime.Now.Next(DayOfWeek.Sunday);
-            Console.WriteLine("\n\n\n\n\n\n\n\n" + viewModel + "\n\n\n\n\n\n\n\n\n");
-            return Json(viewModel);
+            _logger.LogError("Error sending viewModel");
+            return Json(viewModel); // return empty viewModel.
+        }
 
+        [HttpPost]
+        // recieve error reports from frontend and log them. 
+        public async Task<IActionResult> sendErrorReports([FromBody] FrontEndErrorReportModel error)
+        {
+            if (ModelState.IsValid)
+            {
+                _logger.LogError($"Error recieved from {error.Sender}: {error.ErrorMessage}");
+                return Ok("Error recieved and logged.");
+            }
+            return BadRequest();
         }
 
         public IActionResult Privacy()

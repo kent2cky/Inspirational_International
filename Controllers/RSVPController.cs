@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Identity;
 using Inspiration_International.Identity;
 using Inspiration_International.Helpers;
 using Microsoft.AspNetCore.Http;
+using System.Globalization;
 
 namespace Inspiration_International.Controllers
 {
@@ -56,7 +57,7 @@ namespace Inspiration_International.Controllers
                 var dateOfNextClass = DateTime.Now.Next(DayOfWeek.Sunday);
 
                 // Returns 0 if success else 1
-                var response = await _rsvpRepo.SumbitRSVPAsync(dateOfNextClass, user.Id.ToString(), 0);
+                var response = await _rsvpRepo.SubmitRSVPAsync(dateOfNextClass, user.Id.ToString(), 0);
 
                 if (response == 0)
                 {
@@ -88,7 +89,7 @@ namespace Inspiration_International.Controllers
                     dateOfNextClass.Day,
                     23, 59, 59);
 
-                var response = await _rsvpRepo.SumbitRSVPAsync(dateOfNextClass, user.Id.ToString(), 0);
+                var response = await _rsvpRepo.SubmitRSVPAsync(dateOfNextClass, user.Id.ToString(), 0);
 
                 if (response == 0)
                 {
@@ -106,13 +107,45 @@ namespace Inspiration_International.Controllers
                     return RedirectToAction("Index", "Home");
                 }
 
-                _logger.LogError("RSVP submission not successful!!\n");
+                _logger.LogError("Error submitting RSVP!!\n");
 
-                return BadRequest("RSVP submission not successful. Try again later.");
+                return BadRequest("Error submitting RSVP!! Try again later.");
             }
 
             return BadRequest("Bad Request.");
         }
+
+        [HttpPost]
+        public async Task<IActionResult> saveUserPhoneNumber([FromBody] PhoneNumberModel phoneNumberModel)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    UInt64 number;
+
+                    if (!UInt64.TryParse(phoneNumberModel.PhoneNumber, System.Globalization.NumberStyles.AllowLeadingSign,
+                                        CultureInfo.InvariantCulture, out number))
+                    {
+                        _logger.LogError($"Invalid value supplied as phone number: {phoneNumberModel.PhoneNumber}");
+                        return BadRequest($"Invalid value supplied as phone number.");
+                    }
+                    _logger.LogInformation($"Saving user {User.Identity.Name}'s phone number...............\n");
+                    var user = await _userManager.FindByNameAsync(User.Identity.Name);
+                    user.PhoneNumber = phoneNumberModel.PhoneNumber;
+                    _logger.LogInformation($"User {user.Email}'s phone number saved.......");
+                    return Ok($"Phone number saved.......");
+                }
+                _logger.LogError($"Invalid value supplied as phone number: {phoneNumberModel.PhoneNumber}.");
+                return BadRequest($"Invalid value supplied as phone number.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Something went wrong in HomeController's saveUserPhoneNumber endpoint.");
+                return BadRequest();
+            }
+        }
+
 
         public IActionResult Privacy()
         {

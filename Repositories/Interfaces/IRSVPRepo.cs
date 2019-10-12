@@ -15,6 +15,7 @@ namespace Inspiration_International.Repositories
         Task<IEnumerable<RSVP>> GetRSVPsByDateAsync(DateTime dateFor);
         Task<RSVP> UpdateRSVPAsync(int rsvpID, DateTime dateFor, string userID, int didAttend);
         Task<int> DeleteRSVPAsync(int id);
-        Task<int> SumbitRSVPAsync(DateTime dateFor, string userID, int didAttend);
+        Task<int> SubmitRSVPAsync(DateTime dateFor, string userID, int didAttend);
+        Task<IEnumerable<(short, string, string)>> GetAllRSVPWithTheirContacts(DateTime dateFor);
     }
 }

@@ -23,6 +23,8 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Inspiration_International.Services;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using System.Security.Claims;
+using Quartz;
+using Quartz.Impl;
 
 namespace Inspiration_International
 {
@@ -122,7 +124,7 @@ namespace Inspiration_International
                 {
                     // Cookie settings
                     options.Cookie.HttpOnly = true;
-                    options.ExpireTimeSpan = TimeSpan.FromMinutes(500);
+                    options.ExpireTimeSpan = TimeSpan.FromDays(30);
 
                     options.LoginPath = "/Identity/Account/Login";
                     options.AccessDeniedPath = "/Identity/AccessDenied";
@@ -138,7 +140,7 @@ namespace Inspiration_International
             services.AddSession(options =>
             {
                 // Set a short timeout for easy testing.
-                options.IdleTimeout = TimeSpan.FromHours(500);
+                options.IdleTimeout = TimeSpan.FromMinutes(20);
                 options.Cookie.HttpOnly = true;
                 // Make the session cookie essential
                 options.Cookie.IsEssential = true;
@@ -172,12 +174,42 @@ namespace Inspiration_International
             app.UseAuthentication();
             app.UseSession();
 
+            // construct a scheduler factory
+            ISchedulerFactory schedFact = new StdSchedulerFactory();
+
+            // get a scheduler
+            IScheduler sched = schedFact.GetScheduler().GetAwaiter().GetResult();
+            sched.Start();
+
+            var job = JobBuilder.Create<MyEmailDispatcher>()
+            .WithIdentity("myEmailDispatcher", "sendEmailGroup")
+            .Build();
+
+            var trigger = TriggerBuilder.Create()
+            .WithIdentity("emailDispatcherTrigger", "sendEmailGroup")
+            .StartNow()
+            .WithSimpleSchedule(x => x
+            .WithIntervalInSeconds(10)
+            .RepeatForever())    //CronScheduleBuilder.WeeklyOnDayAndHourAndMinute(DayOfWeek.Saturday, 23, 50)
+                                 //.WithMisfireHandlingInstructionFireAndProceed())
+            .Build();
+            sched.ScheduleJob(job, trigger);
+
+
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+
+
+
+
+
+
+
 
             // #if DEBUG
             //             try

@@ -16,7 +16,7 @@ $(".external-login").click(function () {
 });
 
 //Remove and rewrite saved viewModel on sign in
-$("#login-form").submit(function () {
+$("form").submit(function () {
     localStorage.removeItem("InspIntData");
     sessionStorage.removeItem("InspIntData");
 });

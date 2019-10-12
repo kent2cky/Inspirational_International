@@ -217,17 +217,36 @@
 -- ([Date_For] as date ) = @date_For    -- -- to just date. So query this table with only date value eg '29-09-09'.   
 -- END
 
+-- Create a procedure to retrieve the Email and Phone number 
+-- of all that rsvped for a scheduled class.
+
+-- CREATE PROCEDURE spGetAllRSVPWithTheirContacts
+--     (
+--     @Date_For [DATETIME]
+-- )
+-- AS
+-- BEGIN
+--     SELECT Did_Attend,
+--         Email,
+--         PhoneNumber
+--     FROM RSVP
+--         JOIN
+--         dbo.AspNetUsers AS users
+--         ON users.Id=UserID
+--     WHERE cast    -- -- this works by casting the dateTime saved in the table
+--     ([Date_For] as date ) = @Date_For
+-- END
 
 
 -- DROP PROCEDURE dbo.spSubmitRSVP;
 -- GO
 
--- DECLARE @datefor DATETIME
+DECLARE @datefor DATETIME
 -- DECLARE @name NVARCHAR(MAX)
 -- DECLARE @Contact NVARCHAR(MAX)
 -- DECLARE @Did_Attend NVARCHAR(MAX)
 
--- SET @datefor = '09/29/19';
+SET @datefor = '10/13/19';
 -- SET @name = 'Kent2cky@Dev';
 -- SET @Did_Attend = 1;
 
@@ -253,11 +272,13 @@
 -- DELETE FROM RSVP WHERE ID = 2;
 -- GO
 
+EXEC dbo.spGetAllRSVPWithTheirContacts @datefor
+
 -- EXEC dbo.spDeleteRSVP 6
 -- ALTER TABLE RSVP ADD COLUMN _Name;
 
-EXEC dbo.spGetAllRSVP ;
-GO
+-- EXEC dbo.spGetAllRSVP
+-- GO
 
 -- SELECT *
 -- FROM RSVP

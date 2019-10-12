@@ -238,7 +238,7 @@ namespace Inspiration_International.Repositories
                 return null;
             }
 
-            _logger.LogInformation($"Getting RSVPs with date: {dateFor}.\n");
+            _logger.LogInformation($"Getting RSVPs with date: {dateFor}..................\n");
 
             try
             {
@@ -367,7 +367,7 @@ namespace Inspiration_International.Repositories
                 return 1;
             }
         }
-        public async Task<int> SumbitRSVPAsync(DateTime dateFor, string userID, int didAttend)
+        public async Task<int> SubmitRSVPAsync(DateTime dateFor, string userID, int didAttend)
         {
 
             // throws an exception if parameter (dateFor) is null
@@ -408,6 +408,63 @@ namespace Inspiration_International.Repositories
                 //Send errors to logFile.txt
                 _logger.LogError(ex, "Something went wrong in RSVPRepo's SubmitRSVPAsync method.");
                 return 1;
+            }
+        }
+
+        public async Task<IEnumerable<(short, string, string)>> GetAllRSVPWithTheirContacts(DateTime dateFor)
+        {
+            // This method retrieves the contacts of those who RSVPd from database  
+            // It takes the date of the class as its parameter.
+            if (dateFor == null)
+            {
+                _logger.LogError($"Invalid parameter supplied to rsvpRepo's GetAllRSVPWithTheirContacts Parameter Value: {dateFor}");
+                return null;
+            }
+
+            _logger.LogInformation($"Getting RSVPs with date: {dateFor}............\n");
+
+            try
+            {
+                // Create article object
+
+                var RSVPS = new List<(short didAttend, string email, string phoneNumber)>();
+
+                using (SqlConnection con = new SqlConnection(connectionString))
+                {
+                    // Retrieve single article using a stored procedure created in the database
+                    SqlCommand cmd = new SqlCommand("dbo.spGetAllRSVPWithTheirContacts", con);
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@date_For", SqlDbType.DateTime).Value = dateFor;
+
+                    // Open database connection
+                    await con.OpenAsync();
+                    _logger.LogInformation("Database connection opened...............\n");
+                    SqlDataReader rdr = await cmd.ExecuteReaderAsync();
+                    _logger.LogInformation("Reading from database...............\n");
+
+                    while (rdr.Read())
+                    {
+                        // initialize article object with data retrieved from database
+
+                        var didAttend = Convert.ToInt16(rdr["Did_Attend"]);
+                        var email = rdr["Email"].ToString();
+                        var phoneNumber = rdr["PhoneNumber"].ToString();
+
+                        var contactDetails = (didAttend, email, phoneNumber);
+                        RSVPS.Add(contactDetails);
+                    }
+
+                    // Close database connection
+                    con.Close();
+                    _logger.LogInformation("Database connection closed.\n");
+                }
+                return RSVPS;
+            }
+            catch (Exception ex)
+            {
+                //Send errors to Logs.txt
+                _logger.LogError(ex, "Something went wrong in RSVPRepo's GetAllRSVPWithTheirContacts method.");
+                return null;
             }
         }
     }
