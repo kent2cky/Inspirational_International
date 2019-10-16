@@ -142,6 +142,16 @@ span.bold {
   styling for the contents are contained in another
   css file.  
 */
+
+.main-container {
+
+  margin: 6px;
+
+  background: white;
+
+  padding: 15px;
+}
+
 [align-centre] {
   text-align: center;
   background-color: #fff;
@@ -198,16 +208,13 @@ input.submit:hover,
   display: block;
 }
 
-.main {
+main {
   display: block;
   width: 100vw;
   background-color: lavender
 }
 
-main {
-  display: block;
-  width: 100vw;
-}
+
 
 aside {
   display: block;
@@ -379,7 +386,15 @@ footer .container {
 
 /* Style overrides from very small screens goes in here */
 
-@media screen and (max-width: 300px) {}
+@media screen and (max-width: 300px) {
+
+  aside {
+    background: blue;
+    display: block;
+    flex-flow: row wrap;
+    width: 100vw;
+  }
+}
 
 /* Style overrides for tabs goes in here */
 @media screen and (min-width: 750px) {

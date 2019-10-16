@@ -39,7 +39,7 @@
                                 <a asp-area="" asp-controller="Home" asp-action="Index">HOME</a>
                             </li>
                             <li class="">
-                                <a asp-area="" asp-controller="Home" asp-action="Index">GET INSPIRED</a>
+                                <a asp-area="" asp-controller="Home" asp-action="GetInspired">GET INSPIRED</a>
                             </li>
                             <li class="">
                                 <a asp-area="" asp-controller="Home" asp-action="Privacy">TESTIMONIALS</a>
@@ -58,7 +58,7 @@
                                 </li>
                             }
                             <li class="">
-                                <a asp-area="" asp-controller="Home" asp-action="Privacy">ABOUT</a>
+                                <a asp-area="" asp-controller="Home" asp-action="About">ABOUT</a>
                             </li>
                         </ul>
                         <!-- <a id="nav-item search-button" class="right-aligned" asp-area="" asp-controller="Home" asp-action="Privacy">
@@ -67,14 +67,13 @@
                 </div>
             </nav>
     </header>
-    <div class="ui main text container">
         <partial name="_CookieConsentPartial" />
-        <main role="main" class="">
+        <main >
+            <div class="main-container">
             @RenderBody()
+            </div>
         </main>
            @RenderSection("RSVP", false)     
-    </div>
-
     <footer>
         <div class="container">
             <span> <b>Accredited By</b> </span>

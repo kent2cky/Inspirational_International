@@ -133,6 +133,7 @@ namespace Inspiration_International.Controllers
                     _logger.LogInformation($"Saving user {User.Identity.Name}'s phone number...............\n");
                     var user = await _userManager.FindByNameAsync(User.Identity.Name);
                     user.PhoneNumber = phoneNumberModel.PhoneNumber;
+                    await _userManager.UpdateAsync(user);
                     _logger.LogInformation($"User {user.Email}'s phone number saved.......");
                     return Ok($"Phone number saved.......");
                 }

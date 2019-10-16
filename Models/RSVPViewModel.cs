@@ -13,8 +13,6 @@ namespace Inspiration_International.Models
         public string PhoneNumber { get; set; }
         public bool RSVP { get; set; }
         public string FirstName { get; set; }
-        public string PictureData { get; set; }
-        public DateTime DateOfNextClass { get; set; }
 
     }
 

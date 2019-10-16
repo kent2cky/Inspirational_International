@@ -20,6 +20,8 @@ using Microsoft.AspNetCore.Http;
 using Inspiration_International.Helpers;
 using Microsoft.Extensions.Logging;
 using System.Text;
+using System.Runtime.InteropServices;
+using Newtonsoft.Json;
 
 namespace Inspiration_International.Controllers
 {
@@ -64,18 +66,31 @@ namespace Inspiration_International.Controllers
                 // Console.WriteLine($"{v.DidAttend}, {v.Name}, {v.DateFor}");
                 // .GetAllRSVPsAsync();
 
-                var contacts = await _rsvpRepo.GetAllRSVPWithTheirContacts(Convert.ToDateTime("2019-10-13"));
-                var subject = new StringBuilder($"RSVPs for the tomorrows class {DateTime.Now.Next(DayOfWeek.Sunday)}");
-                var message = new StringBuilder("<div>These are the contacts of the people that signed up for tomorrows class</div>\n");
-                message.AppendLine("\t\tEmail Address\t\tPhone Number");
-                foreach (var contact in contacts)
+                var v = HttpContext.Session.GetString("_dateOfNextClass");
+                Console.WriteLine($"\n\n\n\n{v}\n\n\n\n");
+                if (v == null)
                 {
-                    message.AppendLine($"<div>{contact.Item2}\t\t{contact.Item3}</div>");
+                    var nextClass = JsonConvert.SerializeObject(DateTime.UtcNow).ToString();
+                    Console.WriteLine($"\n\n\n\n{nextClass.ToString()} dfjasl;dfjs \n\n\n\n");
+                    HttpContext.Session.SetString("_dateOfNextClass", nextClass);
                 }
-                Console.WriteLine($"\n\n{message.ToString()}.\n\n\n\n\n\n");
+
+                v = HttpContext.Session.GetString("_dateOfNextClass");
+                Console.WriteLine($"\n\n\n\n{v}\n\n\n\n");
 
 
-                //var phoneNumber = TempData["_PN"].ToString();
+                bool isWindows = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+                bool isLinux = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
+
+                // foreach (var TimeZone in TimeZoneInfo.GetSystemTimeZones())
+                // {
+                //     Console.Error.WriteLine(TimeZone.Id + "\t\t " + TimeZone + "\n");
+                //     Console.WriteLine(System.Runtime.InteropServices.RuntimeInformation.OSArchitecture.ToString());
+                //     Console.WriteLine(System.Runtime.InteropServices.RuntimeInformation.OSDescription.ToString());
+                //     Console.WriteLine("Is window: " + isWindows.ToString());
+                //     Console.WriteLine("Is Linux: " + isLinux.ToString());
+                //     Console.WriteLine(HttpContext.Session.GetString("_dateOfNextClass").ToString());
+                // }
 
                 return View();
             }
@@ -105,7 +120,6 @@ namespace Inspiration_International.Controllers
                             );
 
                     var nextClass = DateTime.Now.Next(DayOfWeek.Sunday);
-
                     // If user is in list and the date is date of next class
                     // set RSVP to true else set it to false
                     if (rsvp != null && (rsvp.DateFor.Date == nextClass.Date))
@@ -119,10 +133,7 @@ namespace Inspiration_International.Controllers
 
                     viewModel.PhoneNumber = user.PhoneNumber != null ? "true" : "false";
                     viewModel.FirstName = user.FullName.Split(" ")[0];
-                    viewModel.PictureData = null;
                 }
-
-                viewModel.DateOfNextClass = DateTime.Now.Next(DayOfWeek.Sunday);
                 Console.WriteLine("\n\n\n\n\n\n\n\n" + viewModel + "\n\n\n\n\n\n\n\n\n");
                 return Json(viewModel);
             }
@@ -153,6 +164,31 @@ namespace Inspiration_International.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
+
+        public async Task<IActionResult> About()
+        {
+            return View();
+        }
+
+        public async Task<IActionResult> GetInspired()
+        {
+            return View();
+        }
+
+        public async Task<IActionResult> ProfessionalCourses()
+        {
+            return View();
+        }
+
+        public async Task<IActionResult> AcquireSkill()
+        {
+            return View();
+        }
+
+        public async Task<IActionResult> GetProfessionalCV()
+        {
+            return View();
+        }
 
     }
 }

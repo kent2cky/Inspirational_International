@@ -2,7 +2,7 @@
 // for details on configuring this project to bundle and minify static web assets.
 
 // Write your JavaScript code.
-$("div.nav_handle-container").click(function () {
+$("div.nav_handle-container").click(function() {
   if ($(".toggled").is(":visible")) {
     $(".toggled").hide(500);
     return;
@@ -15,10 +15,10 @@ function sendRSVPtoServer(callback) {
     $.ajax({
       url: "/RSVP/SubmitRSVP",
       type: "GET",
-      success: function (response) {
+      success: function(response) {
         callback(response);
       },
-      error: function (response) {
+      error: function(response) {
         if (response.status == 401) {
           //Redirect user to sign in page
           window.location.href =
@@ -34,7 +34,6 @@ function sendRSVPtoServer(callback) {
   }
 }
 
-
 function setLocalStorage(data) {
   if (!data) {
     return 1; // Returns 1 if not successful.
@@ -45,7 +44,6 @@ function setLocalStorage(data) {
     var usrData = {
       _rsvp: data.rsvp,
       _FN: data.firstName,
-      _dateOfNextClass: data.dateOfNextClass,
       _hasPN: data.phoneNumber
     };
     localStorage.setItem("InspIntData", JSON.stringify(usrData));
@@ -66,7 +64,6 @@ function setSession(data) {
     var usrData = {
       _rsvp: data.rsvp,
       _FN: data.firstName,
-      _dateOfNextClass: data.dateOfNextClass,
       _hasPN: data.phoneNumber
     };
     sessionStorage.setItem("InspIntData", JSON.stringify(usrData));
@@ -82,11 +79,14 @@ function requestViewModelFromServer(callback) {
     $.ajax({
       url: "/Home/GetViewModel",
       type: "GET",
-      success: function (response) {
+      success: function(response) {
         callback(response);
       },
-      error: function (response) {
-        sendErrorReportToServer("requestViewModelFromServer()", response.responseText);
+      error: function(response) {
+        sendErrorReportToServer(
+          "requestViewModelFromServer()",
+          response.responseText
+        );
       }
     });
   } catch (error) {
@@ -104,11 +104,17 @@ function getViewModel() {
       var viewModel = JSON.parse(sessionStorage.getItem("InspIntData"));
       return viewModel;
     } else {
-      sendErrorReportToServer("getViewModel()", "Returning null value as view model!");
+      sendErrorReportToServer(
+        "getViewModel()",
+        "Returning null value as view model!"
+      );
       return null;
     }
   } catch (error) {
-    sendErrorReportToServer("getViewModel()", error + " " + "Returning null value as view model!");
+    sendErrorReportToServer(
+      "getViewModel()",
+      error + " " + "Returning null value as view model!"
+    );
     return null;
   }
 }
@@ -165,9 +171,9 @@ function appendUsersFirstName(firstName) {
   }
 
   try {
-    var salute = document.getElementsByClassName("salute")
-    salute[0].innerText = "Hey " + firstName + ",";
-    salute[1].innerText = "Hey " + firstName + ",";
+    var salute = document.getElementsByClassName("salute");
+    salute[0].innerText = "Hello " + firstName + ",";
+    salute[1].innerText = "Hello " + firstName + ",";
   } catch (error) {
     console.error(error);
     return 1;
@@ -200,14 +206,14 @@ function display(model) {
         // Add button to collect the phone number in case
         // the user changes their mind.
         var submitPhoneNumber = document.createElement("button");
-        submitPhoneNumber.classList.add("submitPhoneNumber")
+        submitPhoneNumber.classList.add("submitPhoneNumber");
         submitPhoneNumber.innerText = "Submit PhoneNumber";
-        submitPhoneNumber.addEventListener('click', function () {
+        submitPhoneNumber.addEventListener("click", function() {
           rsvpDone.style.display = "none";
           getPhoneNumber.style.display = "block";
           rsvpDone.removeChild(submitPhoneNumber);
-        })
-        rsvpDone.appendChild(submitPhoneNumber)
+        });
+        rsvpDone.appendChild(submitPhoneNumber);
       }
       return 0;
     } else {
@@ -221,14 +227,14 @@ function display(model) {
   }
 }
 
-$(".rsvp-cover").ready(function () {
+$(".rsvp-cover").ready(function() {
   // Get view model from the browser local storage or session storage
   var viewModel = getViewModel();
 
   // If nothing is stored in session or local storage then request the data from server
   // and save them in the session or local storage
   if (viewModel === null) {
-    requestViewModelFromServer(function (response) {
+    requestViewModelFromServer(function(response) {
       // Set response to local storage
       if (setLocalStorage(response) !== 0) {
         // Set response to session storage if not successfully set in local storage
@@ -242,14 +248,14 @@ $(".rsvp-cover").ready(function () {
   //Dynamically append users firstName
   appendUsersFirstName(viewModel._FN);
   // Dynamically append date of next class.
-  appendDateOfNextClass(viewModel._dateOfNextClass);
+  var dateOfNextClass = sessionStorage.getItem("_dateOfNextClass");
+  appendDateOfNextClass(dateOfNextClass);
   // Display appropriate rsvp view
   display(viewModel);
 });
 
-
 //Overwrite user data on sign out
-$("#sign-out-btn").click(function () {
+$("#sign-out-btn").click(function() {
   var newModel = getViewModel();
   // Set all data to default except dateOfNextClass
   newModel._rsvp = false;
@@ -264,8 +270,8 @@ $("#sign-out-btn").click(function () {
 });
 
 //Submit RSVP
-$("#rsvp-ok").click(function () {
-  sendRSVPtoServer(function (response) {
+$("#rsvp-ok").click(function() {
+  sendRSVPtoServer(function(response) {
     // Get model from local storage
     var newModel = getViewModel();
     // Set rsvp to true
@@ -281,7 +287,7 @@ $("#rsvp-ok").click(function () {
 });
 
 // If user declines submitting her/his phoneNumber
-$("#decline-submit").click(function ($event) {
+$("#decline-submit").click(function($event) {
   $event.preventDefault();
   $("#phoneNumber-input").val("");
   $("#phoneNumber-input-error").css("display", "none");
@@ -298,11 +304,10 @@ $("#decline-submit").click(function ($event) {
   display(newModel);
 });
 
-$("#phoneNumber-form").submit(function ($event) {
-
+$("#phoneNumber-form").submit(function($event) {
   $event.preventDefault();
   var phoneNumber = $("#phoneNumber-input").val();
-  sendUserPhoneNumberToServer(phoneNumber, function () {
+  sendUserPhoneNumberToServer(phoneNumber, function() {
     var newModel = getViewModel();
     newModel._hasPN = "true";
     // Save it back to local storage
@@ -312,14 +317,14 @@ $("#phoneNumber-form").submit(function ($event) {
       sessionStorage.setItem("InspIntData", JSON.stringify(newModel));
     }
     display(newModel);
-  })
+  });
 });
-
-
 
 function sendErrorReportToServer(sender, errorMessage) {
   if (!sender || !errorMessage) {
-    console.error("Please pass a valid parameter to the sendErrorReportToServer function.");
+    console.error(
+      "Please pass a valid parameter to the sendErrorReportToServer function."
+    );
     return;
   }
   try {
@@ -333,10 +338,10 @@ function sendErrorReportToServer(sender, errorMessage) {
       contentType: "application/json, charset utf8",
       dataType: "text",
       data: error,
-      success: function (response) {
+      success: function(response) {
         console.log(response);
       },
-      error: function (response) {
+      error: function(response) {
         console.log("Error from sendErrorReportToServer: " + response);
       }
     });
@@ -355,24 +360,26 @@ function sendUserPhoneNumberToServer(phoneNumber, callback) {
   try {
     var data = {
       phoneNumber: phoneNumber
-    }
+    };
     $.ajax({
       url: "/RSVP/saveUserPhoneNumber",
       type: "POST",
       contentType: "application/json, charset utf8",
       dataType: "text",
       data: JSON.stringify(data),
-      success: function (response) {
+      success: function(response) {
         console.log(response);
         callback(response);
       },
-      error: function (response) {
+      error: function(response) {
         if (response.status == 401) {
           //Redirect user to sign in page
-          window.location.href =
-            "/Identity/Account/Login?ReturnUrl=%2FHome";
+          window.location.href = "/Identity/Account/Login?ReturnUrl=%2FHome";
         } else {
-          sendErrorReportToServer("sendUserPhoneNumberToServer()", response.responseText);
+          sendErrorReportToServer(
+            "sendUserPhoneNumberToServer()",
+            response.responseText
+          );
           callback(response);
           return;
         }

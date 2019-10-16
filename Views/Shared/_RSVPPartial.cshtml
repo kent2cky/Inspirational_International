@@ -1,10 +1,20 @@
 @model RSVPViewModel
+@using Microsoft.AspNetCore.Http
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+
+<script>
+    if(!sessionStorage.getItem("_dateOfNextClass"))
+    {
+       sessionStorage.setItem("_dateOfNextClass", @Html.Raw( @HttpContextAccessor.HttpContext.Session.GetString("_dateOfNextClass").ToString() )); 
+    }
+</script>
+
 
 <aside>
     <div class="rsvp-cover">
         <div id="will-you-rsvp" style="display: none    ;">
             <p>
-                <span class="salute">Hey,</span>
+                <span class="salute">Hello,</span>
                 <br>
                 <span class="showNextClass">Join us in our next class </span>
                 <br>
@@ -32,7 +42,7 @@
 
         <div id="rsvp-done" style="display: none;">
                 <p>
-                    <span class="salute">Hey,</span>
+                    <span class="salute">Hello,</span>
                     <br>
                     <span class="showNextClass"> We are expecting you in the class</span>
                 </p>
