@@ -315,11 +315,11 @@ footer .container {
   flex-flow: row wrap;
 }
 
-.accreditors_logos span {
+.accreditors_logos a {
   margin: 10px 2px;
 }
 
-.accreditors_logos span:nth-child(1) {
+.accreditors_logos a:nth-child(1) {
   background-image: url("../icons/icon2.jpeg");
   background-repeat: no-repeat;
   background-size: contain;
@@ -328,7 +328,7 @@ footer .container {
   height: 72px;
 }
 
-.accreditors_logos span:nth-child(2) {
+.accreditors_logos a:nth-child(2) {
   background-image: url("../icons/icon3.jpeg");
   background-repeat: no-repeat;
   background-size: contain;
@@ -337,7 +337,7 @@ footer .container {
   height: 72px;
 }
 
-.accreditors_logos span:nth-child(3) {
+.accreditors_logos a:nth-child(3) {
   background-image: url("../icons/icon4.png");
   background-repeat: no-repeat;
   background-size: contain;
@@ -346,7 +346,7 @@ footer .container {
   height: 72px;
 }
 
-.accreditors_logos span:nth-child(4) {
+.accreditors_logos a:nth-child(4) {
   background-image: url("../icons/icon5.jpeg");
   background-repeat: no-repeat;
   background-size: contain;
@@ -432,4 +432,63 @@ footer .container {
 
 #login-text-input-1 {
   left: 53px;
+}
+
+
+/* The following are stylings for the preloader functionality. */
+@keyframes lds-rolling {
+  0% {
+    -webkit-transform: translate(-50%, -50%) rotate(0deg);
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+
+  100% {
+    -webkit-transform: translate(-50%, -50%) rotate(360deg);
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+@-webkit-keyframes lds-rolling {
+  0% {
+    -webkit-transform: translate(-50%, -50%) rotate(0deg);
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+
+  100% {
+    -webkit-transform: translate(-50%, -50%) rotate(360deg);
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+.lds-rolling {
+  position: relative;
+}
+
+.lds-rolling div,
+.lds-rolling div:after {
+  position: absolute;
+  width: 45px;
+  height: 45px;
+  border: 4px solid #dfd7d7;
+  border-top-color: transparent;
+  border-radius: 50%;
+}
+
+.lds-rolling div {
+  -webkit-animation: lds-rolling 1s linear infinite;
+  animation: lds-rolling 1s linear infinite;
+  top: 100px;
+  left: 100px;
+}
+
+.lds-rolling div:after {
+  -webkit-transform: rotate(90deg);
+  transform: rotate(90deg);
+}
+
+.lds-rolling {
+  width: 200px !important;
+  height: 200px !important;
+  -webkit-transform: translate(-100px, -100px) scale(1) translate(100px, 100px);
+  transform: translate(-100px, -100px) scale(1) translate(100px, 100px);
 }

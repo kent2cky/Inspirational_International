@@ -217,16 +217,16 @@ namespace Inspiration_International
             });
 
 
-            // #if DEBUG
-            //             try
-            //             {
-            //                 File.WriteAllText("browsersync-update.txt", DateTime.Now.ToString());
-            //             }
-            //             catch
-            //             {
-            //                 // ignore
-            //             }
-            // #endif
+            #if DEBUG
+                        try
+                        {
+                            File.WriteAllText("browsersync-update.txt", DateTime.Now.ToString());
+                        }
+                        catch
+                        {
+                            // ignore
+                        }
+            #endif
 
         }
 

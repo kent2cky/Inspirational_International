@@ -61,7 +61,7 @@ namespace Inspiration_International.Controllers
 
                 if (response == 0)
                 {
-                    _logger.LogInformation($"RSVP submitted successfully!!!\n\n\n\n\n\n\n\n");
+                    _logger.LogInformation($"RSVP submitted successfully!!!\n");
                     return Ok("RSVP submitted!");
                 }
 
@@ -93,15 +93,7 @@ namespace Inspiration_International.Controllers
 
                 if (response == 0)
                 {
-                    // Set cookie if submission is successful
-                    HttpContext.Response.Cookies.Append("_rsvp", "True",
-                        new CookieOptions()
-                        {
-                            Path = "/",
-                            Expires = expireTime,
-                            HttpOnly = true
-                        });
-                    _logger.LogInformation("Submission successful!\n");
+                    _logger.LogInformation($"RSVP submitted successfully!!!\n");
 
                     // Redirect to home so as to refresh the page.
                     return RedirectToAction("Index", "Home");

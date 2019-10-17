@@ -2,7 +2,7 @@
 // for details on configuring this project to bundle and minify static web assets.
 
 // Write your JavaScript code.
-$("div.nav_handle-container").click(function() {
+$("div.nav_handle-container").click(function () {
   if ($(".toggled").is(":visible")) {
     $(".toggled").hide(500);
     return;
@@ -15,21 +15,22 @@ function sendRSVPtoServer(callback) {
     $.ajax({
       url: "/RSVP/SubmitRSVP",
       type: "GET",
-      success: function(response) {
-        callback(response);
+      success: function (response) {
+        callback(0);
       },
-      error: function(response) {
+      error: function (response) {
         if (response.status == 401) {
           //Redirect user to sign in page
           window.location.href =
             "/Identity/Account/Login?ReturnUrl=%2FRSVP%2FSubmitRSVPs";
         } else {
-          callback(response);
+          callback(1);
           sendErrorReportToServer("sendRSVPtoServer()", response.responseText);
         }
       }
     });
   } catch (error) {
+    callback(1);
     sendErrorReportToServer("sendRSVPtoServer()", error);
   }
 }
@@ -79,10 +80,10 @@ function requestViewModelFromServer(callback) {
     $.ajax({
       url: "/Home/GetViewModel",
       type: "GET",
-      success: function(response) {
+      success: function (response) {
         callback(response);
       },
-      error: function(response) {
+      error: function (response) {
         sendErrorReportToServer(
           "requestViewModelFromServer()",
           response.responseText
@@ -182,13 +183,14 @@ function appendUsersFirstName(firstName) {
 
 function display(model) {
   if (!model) {
-    console.error("Supply a valid viewModel as paremeter.");
+    console.error("Supply a valid viewModel as parameter.");
     return 1;
   }
 
   var willYouRSVP = document.getElementById("will-you-rsvp");
   var getPhoneNumber = document.getElementById("get-phoneNumber");
   var rsvpDone = document.getElementById("rsvp-done");
+  var preloader = document.getElementById("preloader");
 
   try {
     if (model._rsvp === true) {
@@ -196,11 +198,13 @@ function display(model) {
         // NOTE: model._hasPN is a string not a bool
         willYouRSVP.style.display = "none";
         rsvpDone.style.display = "none";
+        preloader.style.display = "none";
         getPhoneNumber.style.display = "block";
         return 0;
       }
       getPhoneNumber.style.display = "none";
       willYouRSVP.style.display = "none";
+      preloader.style.display = "none";
       rsvpDone.style.display = "block";
       if (model._hasPN === "declined") {
         // Add button to collect the phone number in case
@@ -208,7 +212,7 @@ function display(model) {
         var submitPhoneNumber = document.createElement("button");
         submitPhoneNumber.classList.add("submitPhoneNumber");
         submitPhoneNumber.innerText = "Submit PhoneNumber";
-        submitPhoneNumber.addEventListener("click", function() {
+        submitPhoneNumber.addEventListener("click", function () {
           rsvpDone.style.display = "none";
           getPhoneNumber.style.display = "block";
           rsvpDone.removeChild(submitPhoneNumber);
@@ -219,6 +223,7 @@ function display(model) {
     } else {
       rsvpDone.style.display = "none";
       getPhoneNumber.style.display = "none";
+      preloader.style.display = "none";
       willYouRSVP.style.display = "block";
       return 1;
     }
@@ -227,14 +232,14 @@ function display(model) {
   }
 }
 
-$(".rsvp-cover").ready(function() {
+$(".rsvp-cover").ready(function () {
   // Get view model from the browser local storage or session storage
   var viewModel = getViewModel();
 
   // If nothing is stored in session or local storage then request the data from server
   // and save them in the session or local storage
   if (viewModel === null) {
-    requestViewModelFromServer(function(response) {
+    requestViewModelFromServer(function (response) {
       // Set response to local storage
       if (setLocalStorage(response) !== 0) {
         // Set response to session storage if not successfully set in local storage
@@ -255,7 +260,7 @@ $(".rsvp-cover").ready(function() {
 });
 
 //Overwrite user data on sign out
-$("#sign-out-btn").click(function() {
+$("#sign-out-btn").click(function () {
   var newModel = getViewModel();
   // Set all data to default except dateOfNextClass
   newModel._rsvp = false;
@@ -270,24 +275,41 @@ $("#sign-out-btn").click(function() {
 });
 
 //Submit RSVP
-$("#rsvp-ok").click(function() {
-  sendRSVPtoServer(function(response) {
-    // Get model from local storage
-    var newModel = getViewModel();
-    // Set rsvp to true
-    newModel._rsvp = true;
-    // Save it back to local storage
-    try {
-      localStorage.setItem("InspIntData", JSON.stringify(newModel));
-    } catch (error) {
-      sessionStorage.setItem("InspIntData", JSON.stringify(newModel));
-    }
-    display(newModel);
-  });
+$("#rsvp-ok").click(function () {
+  var willYouRSVP = document.getElementById("will-you-rsvp");
+  var preloader = document.getElementById("preloader");
+
+  willYouRSVP.style.display = "none";
+  preloader.style.display = "block";
+
+
+  setTimeout(function () {
+    sendRSVPtoServer(function (response) {
+      // Return early if there is error.
+      if (response !== 0) {
+        alert("Something went wrong while submiting your rsvp. Please try again later.");
+        willYouRSVP.style.display = "block";
+        preloader.style.display = "none";
+        return;
+      }
+      // Get model from local storage
+      var newModel = getViewModel();
+      // Set rsvp to true
+      newModel._rsvp = true;
+      // Save it back to local storage
+      try {
+        localStorage.setItem("InspIntData", JSON.stringify(newModel));
+      } catch (error) {
+        sessionStorage.setItem("InspIntData", JSON.stringify(newModel));
+      }
+      display(newModel);
+    });
+  }, 1000);
+
 });
 
 // If user declines submitting her/his phoneNumber
-$("#decline-submit").click(function($event) {
+$("#decline-submit").click(function ($event) {
   $event.preventDefault();
   $("#phoneNumber-input").val("");
   $("#phoneNumber-input-error").css("display", "none");
@@ -304,20 +326,42 @@ $("#decline-submit").click(function($event) {
   display(newModel);
 });
 
-$("#phoneNumber-form").submit(function($event) {
+$("#phoneNumber-form").submit(function ($event) {
   $event.preventDefault();
   var phoneNumber = $("#phoneNumber-input").val();
-  sendUserPhoneNumberToServer(phoneNumber, function() {
-    var newModel = getViewModel();
-    newModel._hasPN = "true";
-    // Save it back to local storage
-    try {
-      localStorage.setItem("InspIntData", JSON.stringify(newModel));
-    } catch (error) {
-      sessionStorage.setItem("InspIntData", JSON.stringify(newModel));
-    }
-    display(newModel);
-  });
+
+  if (!/^[0-9]{11,15}$/.test(phoneNumber)) {
+    $("#phoneNumber-input").val("");
+    return;
+  }
+
+  var getPhoneNumber = document.getElementById("get-phoneNumber");
+  var preloader = document.getElementById("preloader");
+
+  getPhoneNumber.style.display = "none";
+  preloader.style.display = "block";
+
+  setTimeout(function () {
+    sendUserPhoneNumberToServer(phoneNumber, function (response) {
+      // Return early if there is error.
+      if (response !== 0) {
+        alert("Something went wrong while submiting your phone number. Please try again later.");
+        willYouRSVP.style.display = "block";
+        preloader.style.display = "none";
+        return;
+      }
+
+      var newModel = getViewModel();
+      newModel._hasPN = "true";
+      // Save it back to local storage
+      try {
+        localStorage.setItem("InspIntData", JSON.stringify(newModel));
+      } catch (error) {
+        sessionStorage.setItem("InspIntData", JSON.stringify(newModel));
+      }
+      display(newModel);
+    });
+  }, 1000);
 });
 
 function sendErrorReportToServer(sender, errorMessage) {
@@ -338,10 +382,10 @@ function sendErrorReportToServer(sender, errorMessage) {
       contentType: "application/json, charset utf8",
       dataType: "text",
       data: error,
-      success: function(response) {
+      success: function (response) {
         console.log(response);
       },
-      error: function(response) {
+      error: function (response) {
         console.log("Error from sendErrorReportToServer: " + response);
       }
     });
@@ -357,6 +401,7 @@ function sendUserPhoneNumberToServer(phoneNumber, callback) {
     $("#phoneNumber-input").val("");
     return;
   }
+
   try {
     var data = {
       phoneNumber: phoneNumber
@@ -367,11 +412,10 @@ function sendUserPhoneNumberToServer(phoneNumber, callback) {
       contentType: "application/json, charset utf8",
       dataType: "text",
       data: JSON.stringify(data),
-      success: function(response) {
-        console.log(response);
-        callback(response);
+      success: function (response) {
+        callback(0);
       },
-      error: function(response) {
+      error: function (response) {
         if (response.status == 401) {
           //Redirect user to sign in page
           window.location.href = "/Identity/Account/Login?ReturnUrl=%2FHome";
@@ -380,12 +424,13 @@ function sendUserPhoneNumberToServer(phoneNumber, callback) {
             "sendUserPhoneNumberToServer()",
             response.responseText
           );
-          callback(response);
+          callback(1);
           return;
         }
       }
     });
   } catch (error) {
+    callback(1);
     console.error("Error from submitButton" + error);
   }
 }
