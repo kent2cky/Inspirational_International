@@ -128,7 +128,7 @@ namespace Inspiration_International
                 {
                     // Cookie settings
                     options.Cookie.HttpOnly = true;
-                    options.ExpireTimeSpan = TimeSpan.FromDays(30);
+                    options.ExpireTimeSpan = TimeSpan.FromDays(40);
 
                     options.LoginPath = "/Identity/Account/Login";
                     options.AccessDeniedPath = "/Identity/AccessDenied";
@@ -145,7 +145,7 @@ namespace Inspiration_International
             services.AddSession(options =>
             {
                 // Set a short timeout for easy testing.
-                options.IdleTimeout = TimeSpan.FromMinutes(20);
+                options.IdleTimeout = TimeSpan.FromMinutes(1);
                 options.Cookie.HttpOnly = true;
                 // Make the session cookie essential
                 options.Cookie.IsEssential = true;
@@ -174,34 +174,6 @@ namespace Inspiration_International
 
             StartQuartzJobs(app, lifetime);
 
-            // var services = new ServiceCollection();
-            // var container = services.BuildServiceProvider();
-            // var jobFactory = new IntegrationJobFactory(container);
-            // // construct a scheduler factory
-            // ISchedulerFactory schedFact = new StdSchedulerFactory();
-
-            // // get a scheduler
-            // IScheduler sched = schedFact.GetScheduler().GetAwaiter().GetResult();
-            // sched.JobFactory = jobFactory;
-            // sched.Start();
-
-            // var job = JobBuilder.Create<MyEmailDispatcher>()
-            // .WithIdentity("myEmailDispatcher", "sendEmailGroup")
-            // .Build();
-
-            // var trigger = TriggerBuilder.Create()
-            // .WithIdentity("emailDispatcherTrigger", "sendEmailGroup")
-            // .StartNow()
-            // .WithSimpleSchedule(x => x
-            // .WithIntervalInMinutes(10)
-            // .RepeatForever())    //CronScheduleBuilder.WeeklyOnDayAndHourAndMinute(DayOfWeek.Saturday, 23, 50)
-            //                      //.WithMisfireHandlingInstructionFireAndProceed())
-            // .Build();
-
-
-            // sched.ScheduleJob(job, trigger);
-
-
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
@@ -217,16 +189,16 @@ namespace Inspiration_International
             });
 
 
-            #if DEBUG
-                        try
-                        {
-                            File.WriteAllText("browsersync-update.txt", DateTime.Now.ToString());
-                        }
-                        catch
-                        {
-                            // ignore
-                        }
-            #endif
+#if DEBUG
+            try
+            {
+                File.WriteAllText("browsersync-update.txt", DateTime.Now.ToString());
+            }
+            catch
+            {
+                // ignore
+            }
+#endif
 
         }
 

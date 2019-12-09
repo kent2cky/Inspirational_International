@@ -3,11 +3,28 @@
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 
 <script>
-    if(!sessionStorage.getItem("_dateOfNextClass"))
-    {
-       sessionStorage.setItem("_dateOfNextClass", @Html.Raw( @HttpContextAccessor.HttpContext.Session.GetString("_dateOfNextClass").ToString() )); 
+
+function setDateOfNextClass() {
+
+var date = sessionStorage.getItem("_dateOfNextClass");
+var newDate = @Html.Raw( @HttpContextAccessor.HttpContext.Session.GetString("_dateOfNextClass").ToString());
+var splitDate;
+var splitNewDate;
+
+    if(date !== null){
+        splitDate = date.split("T")[0];
+        splitNewDate = newDate.split("T")[0];
     }
-</script>
+    if (splitDate !== splitNewDate) {
+        localStorage.removeItem("InspIntData");
+    }
+
+    sessionStorage.setItem("_dateOfNextClass", newDate)
+}
+
+setDateOfNextClass();
+  
+  </script>
 
 
 <aside>

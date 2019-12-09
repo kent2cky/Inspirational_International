@@ -3,7 +3,6 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="google-signin-client_id" content="105963320750-cbb3s3nptm86skd9efcfjhm5ph2b7koc.apps.googleusercontent.com"/>
     <title>@ViewData["Title"] - Inspiration International</title>
 
     <environment include="Development">
@@ -35,35 +34,36 @@
 
                 <div class="toggled" role="Toggle navigation">
                         <ul class="nav-items-list" id="list">
-                            <li class="primary">
+                            <li id="home">
                                 <a asp-area="" asp-controller="Home" asp-action="Index">HOME</a>
                             </li>
-                            <li class="">
+                            <li id="getInspired">
                                 <a asp-area="" asp-controller="Home" asp-action="GetInspired">GET INSPIRED</a>
                             </li>
-                            <li class="">
-                                <a asp-area="" asp-controller="Home" asp-action="Privacy">TESTIMONIALS</a>
+                            <li id="courses">
+                                <a asp-area="" asp-controller="Home" asp-action="ProfessionalCourses"> COURSES</a>
                             </li>
+                             <li id="privacy">
+                                <a asp-area="" asp-controller="Home" asp-action="Privacy">PRIVACY</a>
+                            </li>
+                            <li id="aboutUs">
+                                <a asp-area="" asp-controller="Home" asp-action="About">ABOUT US</a>
+                            </li>
+
                             @if(!User.Identity.IsAuthenticated)
                             {
-                                <li class="">
+                                <li id="signIn">
                                     <a asp-area="Identity" asp-page="/Account/Login">SIGN IN</a>
                                 </li>
                             }
                             else
                             {
-                                <li class="">
+                                <li class="signOut">
                                     <a id="sign-out-btn" asp-area="Identity" asp-page="/Account/Logout">SIGN OUT</a>
 
                                 </li>
                             }
-                            <li class="">
-                                <a asp-area="" asp-controller="Home" asp-action="About">ABOUT</a>
-                            </li>
                         </ul>
-                        <!-- <a id="nav-item search-button" class="right-aligned" asp-area="" asp-controller="Home" asp-action="Privacy">
-                        <img class="search-icon" src="~/loupe.svg" width="41" height="32">
-                        </a> -->
                 </div>
             </nav>
     </header>
@@ -72,8 +72,7 @@
             <div class="main-container">
             @RenderBody()
             </div>
-        </main>
-           @RenderSection("RSVP", false)     
+                       @RenderSection("RSVP", false)     
     <footer>
         <div class="container">
             <span> <b>Accredited by:</b> </span>
@@ -83,9 +82,12 @@
                 <a href="https://www.cswe.org" target="_blank" title="Council on Social Work Education logo">
                 <a href="https://www.acbsp.org" target="_blank" title="Accreditation Council for Business Schools and Programs logo">
                 </div>
+               <span> <a asp-controller="Home" asp-action="Privacy"> Privacy Policy </a></span> <br><br>
                &copy; Copyright 2019 - <a asp-controller="Home" asp-action="Index"> Inspiration International </a> by Coach Kenny. 
         </div>
     </footer>
+        </main>
+
 
     <environment include="Development">
         <script src="~/lib/jquery/dist/jquery.js"></script>

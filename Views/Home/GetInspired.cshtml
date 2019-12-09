@@ -1,6 +1,12 @@
+@{
+    ViewData["Title"] = "Get Inspired";
+}
+    
+    <h1>@ViewData["Title"]</h1>  
+
 <div class="text-center">
-    <h1>Get Inspired page</h1>
     <p>Coming soon....</p>
+    <a asp-controller="Home" asp-action="Index">Go Back</a>
 </div>
 
 @section RSVP 
@@ -13,3 +19,8 @@
         <partial name="_ValidationScriptsPartial"/>
         <partial name="_MyScriptsPartial" />
 }
+
+<script>
+var listItem = document.getElementById("getInspired");
+listItem.classList.add("primary");
+</script>
