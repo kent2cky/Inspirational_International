@@ -2,6 +2,46 @@
 // for details on configuring this project to bundle and minify static web assets.
 
 // Write your JavaScript code.
+
+function scrollEvent() {
+  $(window).scroll(function () {
+
+    var top_of_element = $("footer").offset().top;
+    var bottom_of_element = $("footer").offset().top + $("footer").outerHeight();
+    var bottom_of_screen = $(window).scrollTop() + $(window).innerHeight();
+    var top_of_screen = $(window).scrollTop();
+
+    if ((bottom_of_screen > top_of_element) && (top_of_screen < bottom_of_element)) {
+      // the element is visible, do something
+      console.log("Element is visible.");
+      $("aside").css({
+        'position': 'relative'
+      });
+    } else {
+      // the element is not visible, do something else
+      console.log("not visible.");
+      $("aside").css({
+        'position': 'fixed'
+      });
+    }
+  });
+}
+
+largeScreen = window.matchMedia("(max-width: 700px)");
+largeScreen.addListener(scrollEvent);
+
+
+
+// $(window).scroll(function () {
+//   console.log("window scrolled.");
+//   if ($("footer").is(":visible")) {
+//     console.log("Footer is visible");
+//     
+//   }
+// });
+
+
+
 $("div.nav_handle-container").click(function () {
   if ($(".toggled").is(":visible")) {
     $(".toggled").hide(500);
@@ -9,6 +49,7 @@ $("div.nav_handle-container").click(function () {
   }
   $(".toggled").show(500);
 });
+
 
 function sendRSVPtoServer(callback) {
   try {

@@ -66,18 +66,15 @@ namespace Inspiration_International.Controllers
                 // Console.WriteLine($"{v.DidAttend}, {v.Name}, {v.DateFor}");
                 // .GetAllRSVPsAsync();
 
-                var v = HttpContext.Session.GetString("_dateOfNextClass");
-                Console.WriteLine($"\n\n\n\n{v}\n\n\n\n");
-                if (v == null)
+                if (User.IsInRole("Admin"))
                 {
-                    var nextClass = JsonConvert.SerializeObject(DateTime.UtcNow).ToString();
-                    Console.WriteLine($"\n\n\n\n{nextClass.ToString()} dfjasl;dfjs \n\n\n\n");
-                    HttpContext.Session.SetString("_dateOfNextClass", nextClass);
+                    Console.WriteLine("User is an admin!");
                 }
 
-                v = HttpContext.Session.GetString("_dateOfNextClass");
-                Console.WriteLine($"\n\n\n\n{v}\n\n\n\n");
 
+
+
+                SetDateOfNextClassToSession();
 
                 bool isWindows = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
                 bool isLinux = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
@@ -155,6 +152,7 @@ namespace Inspiration_International.Controllers
 
         public IActionResult Privacy()
         {
+            SetDateOfNextClassToSession();
             return View();
         }
 
@@ -167,27 +165,62 @@ namespace Inspiration_International.Controllers
 
         public async Task<IActionResult> About()
         {
+            SetDateOfNextClassToSession();
             return View();
         }
 
         public async Task<IActionResult> GetInspired()
         {
+            SetDateOfNextClassToSession();
             return View();
         }
 
         public async Task<IActionResult> ProfessionalCourses()
         {
+            SetDateOfNextClassToSession();
             return View();
         }
 
         public async Task<IActionResult> AcquireSkill()
         {
+            SetDateOfNextClassToSession();
             return View();
         }
 
         public async Task<IActionResult> GetProfessionalCV()
         {
+            SetDateOfNextClassToSession();
             return View();
+        }
+
+        public async Task<IActionResult> HRM()
+        {
+            SetDateOfNextClassToSession();
+            return View();
+        }
+
+        public async Task<IActionResult> ProjectManagement()
+        {
+            SetDateOfNextClassToSession();
+            return View();
+        }
+
+        public async Task<IActionResult> CustServiceMgt()
+        {
+            SetDateOfNextClassToSession();
+            return View();
+        }
+
+
+        private void SetDateOfNextClassToSession()
+        {
+            // Check if session is already set otherwise set the date of next class to session
+            if (HttpContext.Session.GetString("_dateOfNextClass") == null)
+            {
+                var nextClass = JsonConvert.SerializeObject(DateTime.UtcNow.Next(DayOfWeek.Sunday)).ToString();
+                Console.WriteLine($"\n\n\n\n{nextClass.ToString()} dfjasl;dfjs \n\n\n\n");
+                HttpContext.Session.SetString("_dateOfNextClass", nextClass);
+            }
         }
 
     }

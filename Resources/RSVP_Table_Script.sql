@@ -24,9 +24,9 @@
 -- CREATE DATABASE InspInt_Database;
 -- GO
 
--- SELECT *
--- FROM INFORMATION_SCHEMA.TABLES
--- GO
+SELECT *
+FROM INFORMATION_SCHEMA.TABLES
+GO
 
 -- Create a new table called 'RSVP' in schema 'dbo'
 -- Drop the table if it already exists
@@ -241,12 +241,12 @@
 -- DROP PROCEDURE dbo.spSubmitRSVP;
 -- GO
 
-DECLARE @datefor DATETIME
+-- DECLARE @datefor DATETIME
 -- DECLARE @name NVARCHAR(MAX)
 -- DECLARE @Contact NVARCHAR(MAX)
 -- DECLARE @Did_Attend NVARCHAR(MAX)
 
-SET @datefor = '10/13/19';
+-- SET @datefor = '10/13/19';
 -- SET @name = 'Kent2cky@Dev';
 -- SET @Did_Attend = 1;
 
@@ -272,7 +272,7 @@ SET @datefor = '10/13/19';
 -- DELETE FROM RSVP WHERE ID = 2;
 -- GO
 
-EXEC dbo.spGetAllRSVPWithTheirContacts @datefor
+-- EXEC dbo.spGetAllRSVPWithTheirContacts @datefor
 
 -- EXEC dbo.spDeleteRSVP 6
 -- ALTER TABLE RSVP ADD COLUMN _Name;

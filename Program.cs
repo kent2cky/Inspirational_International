@@ -25,6 +25,9 @@ namespace Inspiration_International
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>().UseNLog();
+                .UseStartup<Startup>()
+                .UseNLog()
+                .UseIISIntegration()
+                .UseKestrel();
     }
 }

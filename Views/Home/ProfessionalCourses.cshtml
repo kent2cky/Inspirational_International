@@ -1,4 +1,8 @@
-    <h1>Professional Courses</h1>
+    @{
+    ViewData["Title"] = "Professional Courses";
+}
+    
+    <h1>@ViewData["Title"]</h1>
     <p>
     Highly successful people have a common characteristic which is the never quenching thirst for knowledge. 
     This is why businesses, corporations and highly ambitious institutions only go after people with great thirst for knowledge. 
@@ -11,15 +15,18 @@
 
     <p> The courses we offer include:  </p>
     <ul>
-    <li><a href="#">Customer Care Representative.</a></li>
-    <li><a href="#">Project management</a></li>
-    <li><a href="#">Human Resource Management</a></li>
+    <li><a asp-controller="Home" asp-action="CustServiceMgt">Customer Service Management</a></li>
+    <li><a asp-controller="Home" asp-action="ProjectManagement">Project Management</a></li>
+    <li><a asp-controller="Home" asp-action="HRM">Human Resource Management</a></li>
     </ul>
 
     <p>
     These courses will have the added benefits of keeping your qualifications up to date, build your professional credibility,
     showcase your will to improve and also boost your C.V.
     </p>
+
+    <a asp-controller="Home" asp-action="Index">Go Back</a>
+
 @section RSVP 
 {
     <partial name="_RSVPPartial"/>
@@ -30,3 +37,9 @@
         <partial name="_ValidationScriptsPartial"/>
         <partial name="_MyScriptsPartial" />
 }
+
+
+<script>
+var listItem = document.getElementById("courses");
+listItem.classList.add("primary");
+</script>

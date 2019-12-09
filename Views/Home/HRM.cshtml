@@ -1,0 +1,35 @@
+@{
+    ViewData["Title"] = "Human Resource Management";
+}
+    
+    <h1>@ViewData["Title"]</h1>    
+    <p>
+        Human resource management is a course designed for individuals who are or would like to be involved in HR operations such as recruiting, 
+        compensation and administration. 
+        By the end of this course, these individuals will have acquired and also be able to provide the knowledge, necessary tools, training, 
+        administrative services, coaching, legal and management advice, and talent management oversight that the rest of the organization needs for successful operation.
+    </p>
+    <p>
+        The 21st century goes beyond the knowledge of job and employment but understanding the basis of humanity and how to manage humans. 
+        These soft skills are usually not taught in the universities but in professional classes as obtained at Inspiration International.    
+    </p>
+    <p> 
+        During this course you will be prepared and well equipped for an exam that will qualify you for an internationally recognized certificate in Human Resource Management and ultimately for the corporate world.
+    </p>
+    <p> 
+    To join the class, all that is required is for you to click on the RSVP button on this site.
+    </p>
+
+    <a asp-controller="Home" asp-action="ProfessionalCourses">Go Back</a>
+
+
+@section RSVP 
+{
+    <partial name="_RSVPPartial"/>
+}
+
+
+@section Scripts {
+        <partial name="_ValidationScriptsPartial"/>
+        <partial name="_MyScriptsPartial" />
+}

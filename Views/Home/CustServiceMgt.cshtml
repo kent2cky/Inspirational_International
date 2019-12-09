@@ -1,0 +1,41 @@
+@{
+    ViewData["Title"] = "Customer Service Management";
+}
+    
+    <h1>@ViewData["Title"]</h1>   
+     <p>
+        Customers are the reasons why businesses exist. Therefore businesses adopt a lot of processes, techniques, strategies, technologies, etc to keep their customers happy. 
+        These, however, can never take the place of humans in forging and maintaining long lasting relationship with the customers. 
+        This necessitates the role of the customer service manager.
+    </p>
+    <p>
+        Customer service managers are those who continually interact with customers, finding out their needs attending to their needs and informing them about the products and services of businesses. 
+        The customer care representative is so important to businesses that they do not just hire unqualified people to occupy that role. 
+        This is why this course is important for anyone who wants to get their foot into the corporate world as a customer service manager.
+    </p>
+
+    <p> 
+        This course is also for those who are already customer care representatives but wants to be updated on the latest trends, skills, processes and best practices in customer service management. 
+    </p>
+
+    <p>
+        During this course you will learn the skills, techniques, tactics, best practices and tools necessary to make you a world class customer care representative. 
+        You will also be prepared and well equipped for an exam that will qualify you for an internationally recognized certificate in Customer Service Management and ultimately for the corporate world. 
+    </p>
+
+    <p>
+    To join the class, all that is required is for you to click on the RSVP button on this site. 
+    </p>
+
+    <a asp-controller="Home" asp-action="ProfessionalCourses">Go Back</a>
+
+@section RSVP 
+{
+    <partial name="_RSVPPartial"/>
+}
+
+
+@section Scripts {
+        <partial name="_ValidationScriptsPartial"/>
+        <partial name="_MyScriptsPartial" />
+}
