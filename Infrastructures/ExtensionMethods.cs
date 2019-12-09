@@ -6,6 +6,8 @@ namespace Inspiration_International.Helpers
     {
         public static DateTime Next(this DateTime from, DayOfWeek dayOfWeek)
         {
+            if (DateTime.Now.DayOfWeek == dayOfWeek)
+            { return DateTime.Now; }
             int start = (int)from.DayOfWeek;
             int target = (int)dayOfWeek;
             if (target <= start)

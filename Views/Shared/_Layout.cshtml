@@ -39,7 +39,7 @@
                                 <a asp-area="" asp-controller="Home" asp-action="Index">HOME</a>
                             </li>
                             <li class="">
-                                <a asp-area="" asp-controller="Home" asp-action="Index">GET INSPIRED</a>
+                                <a asp-area="" asp-controller="Home" asp-action="GetInspired">GET INSPIRED</a>
                             </li>
                             <li class="">
                                 <a asp-area="" asp-controller="Home" asp-action="Privacy">TESTIMONIALS</a>
@@ -53,12 +53,12 @@
                             else
                             {
                                 <li class="">
-                                    <a asp-area="Identity" asp-page="/Account/Logout">SIGN OUT</a>
+                                    <a id="sign-out-btn" asp-area="Identity" asp-page="/Account/Logout">SIGN OUT</a>
 
                                 </li>
                             }
                             <li class="">
-                                <a asp-area="" asp-controller="Home" asp-action="Privacy">ABOUT</a>
+                                <a asp-area="" asp-controller="Home" asp-action="About">ABOUT</a>
                             </li>
                         </ul>
                         <!-- <a id="nav-item search-button" class="right-aligned" asp-area="" asp-controller="Home" asp-action="Privacy">
@@ -67,22 +67,21 @@
                 </div>
             </nav>
     </header>
-    <div class="ui main text container">
         <partial name="_CookieConsentPartial" />
-        <main role="main" class="">
+        <main >
+            <div class="main-container">
             @RenderBody()
+            </div>
         </main>
            @RenderSection("RSVP", false)     
-    </div>
-
     <footer>
         <div class="container">
-            <span> <b>Accredited By</b> </span>
+            <span> <b>Accredited by:</b> </span>
                 <div class="accreditors_logos">
-                <span name="Global Accreditation Center for Project Management logo" ></span>
-                <span name="National Council for Accreditation of Teacher Education logo" ></span>
-                <span name="Council on Social Work Education logo" ></span>
-                <span name="Accreditation Council for Business Schools and Programs logo" ></span>
+                <a href="https://www.pmi.org/global-accreditation-center" target="_blank" title="Global Accreditation Center for Project Management logo">
+                <a href="http://www.ncate.org/" target="_blank" title="National Council for Accreditation of Teacher Education logo">
+                <a href="https://www.cswe.org" target="_blank" title="Council on Social Work Education logo">
+                <a href="https://www.acbsp.org" target="_blank" title="Accreditation Council for Business Schools and Programs logo">
                 </div>
                &copy; Copyright 2019 - <a asp-controller="Home" asp-action="Index"> Inspiration International </a> by Coach Kenny. 
         </div>
@@ -99,15 +98,8 @@
                 crossorigin="anonymous"
                 integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=">
         </script>
-        <script src="~/js/site.js"
-                asp-fallback-src="~/js/site.js"
-                asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal"
-                crossorigin="anonymous"
-                integrity="sha384-xrRywqdh3PHs8keKZN+8zzc5TX0GRTLCcmivcbNJWm2rs5C8PRhcEn3czEjhAO9o">
-        </script>
     </environment>
     @RenderSection("Scripts", required: false)
-    <script src="~/js/site.js" asp-append-version="true"></script>
      <!-- <script id="__bs_script__">//<![CDATA[
     document.write("<script async src='http://HOST:3000/browser-sync/browser-sync-client.js?v=2.26.7'><\/script>".replace("HOST", location.hostname));
 //]]></script> -->

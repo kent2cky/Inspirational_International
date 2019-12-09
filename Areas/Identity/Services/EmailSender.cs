@@ -22,7 +22,6 @@ namespace Inspiration_International.Services
             var apiKey = _configuration["Secrets:SendGridApiKey"] ?? "Not found!!";
             Console.WriteLine(apiKey);
             await Execute(apiKey, email, subject, message);
-            _logger.LogInformation("Account Confirmation Email sent!");
         }
 
         static async Task Execute(string apiKey, string email, string subject, string message)

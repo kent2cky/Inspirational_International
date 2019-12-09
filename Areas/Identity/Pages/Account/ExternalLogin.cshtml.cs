@@ -11,6 +11,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
+using Inspiration_International.Repositories;
+using Inspiration_International.Helpers;
 
 namespace Inspiration_International.Areas.Identity.Pages.Account
 {
@@ -20,15 +23,18 @@ namespace Inspiration_International.Areas.Identity.Pages.Account
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<ExternalLoginModel> _logger;
+        private IRSVPRepo _rsvpRepo;
 
         public ExternalLoginModel(
             SignInManager<ApplicationUser> signInManager,
             UserManager<ApplicationUser> userManager,
-            ILogger<ExternalLoginModel> logger)
+            ILogger<ExternalLoginModel> logger,
+            IRSVPRepo rsvpRepo)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _logger = logger;
+            _rsvpRepo = rsvpRepo;
         }
 
         [BindProperty]
@@ -156,8 +162,19 @@ namespace Inspiration_International.Areas.Identity.Pages.Account
                         var props = new AuthenticationProperties();
                         props.StoreTokens(info.AuthenticationTokens);
                         props.IsPersistent = true;
-
                         await _signInManager.SignInAsync(user, isPersistent: true);
+
+                        var PhoneNumber = user.PhoneNumber != null;
+                        Response.Cookies.Append("_FN", user.FullName?.Split(" ")[0], new CookieOptions()
+                        {
+                            Path = "/",
+                            HttpOnly = true
+                        });
+                        Response.Cookies.Append("_PN", PhoneNumber.ToString(), new CookieOptions()
+                        {
+                            Path = "/",
+                            HttpOnly = true
+                        });
                         _logger.LogInformation("User created an account using {Name} provider.", info.LoginProvider);
                         return LocalRedirect(returnUrl);
                     }

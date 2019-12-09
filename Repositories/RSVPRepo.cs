@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 using Inspiration_International.Entities;
+using Inspiration_International.Helpers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -16,7 +17,7 @@ namespace Inspiration_International.Repositories
 
         public RSVPRepo(IConfiguration configuration, ILogger<RSVPRepo> logger)
         {
-            connectionString = configuration["Secrets:InspIntConnectionString"];
+            connectionString = configuration["Secrets:ConnectionString"];
             _logger = logger;
         }
 
@@ -52,8 +53,7 @@ namespace Inspiration_International.Repositories
                         RSVP rsvp = new RSVP();
                         rsvp.RsvpID = Convert.ToInt16(rdr["ID"]);
                         rsvp.DateFor = Convert.ToDateTime(rdr["Date_For"]);
-                        rsvp.Contact = rdr["Contact"].ToString();
-                        rsvp.Name = rdr["_Name"].ToString();
+                        rsvp.UserID = rdr["UserID"].ToString();
                         rsvp.DidAttend = rdr["Did_Attend"].ToString() == "0"; // Records 0 in database if the person attended otherwise records 1
 
                         // Populate the list with the rsvp objects
@@ -108,8 +108,7 @@ namespace Inspiration_International.Repositories
                         // initialize rsvp object with data retrieved from database
                         rsvp.RsvpID = Convert.ToInt16(rdr["ID"]);
                         rsvp.DateFor = Convert.ToDateTime(rdr["Date_For"]);
-                        rsvp.Contact = rdr["Contact"].ToString();
-                        rsvp.Name = rdr["_Name"].ToString();
+                        rsvp.UserID = rdr["UserID"].ToString();
                         rsvp.DidAttend = rdr["Did_Attend"].ToString() == "0"; // Records 0 in database if the person attended otherwise records 1
                         // rsvp.DidAttend will be true if 0 is returned from database otherwise will be false
                     }
@@ -126,6 +125,109 @@ namespace Inspiration_International.Repositories
                 return null;
             }
         }
+
+        public async Task<RSVP> GetSingleRSVPByUserIDAsync(string userID)
+        {
+            if (userID == string.Empty)
+            {
+                _logger.LogError($"Invalid parameter supplied to RSVPRepo's GetSingleRSVPByIDAsync. Parameter Value: {userID}");
+                return null;
+            }
+            _logger.LogInformation($"Getting RSVP with user id: {userID}\n");
+            try
+            {
+                // Create empty rsvp object
+
+                var rsvp = new RSVP();
+
+                using (SqlConnection con = new SqlConnection(connectionString))
+                {
+                    // Retrieve single rsvp using a stored procedure created in the database
+                    SqlCommand cmd = new SqlCommand("dbo.spGetSingleRSVPByUserId", con);
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@UserID", SqlDbType.NVarChar).Value = userID;
+
+                    // Open database connection
+                    await con.OpenAsync();
+                    _logger.LogInformation("Database connection opened...............\n");
+                    SqlDataReader rdr = await cmd.ExecuteReaderAsync();
+                    _logger.LogInformation("Reading from database...............\n");
+
+                    while (rdr.Read())
+                    {
+                        // initialize rsvp object with data retrieved from database
+                        rsvp.RsvpID = Convert.ToInt16(rdr["ID"]);
+                        rsvp.DateFor = Convert.ToDateTime(rdr["Date_For"]);
+                        rsvp.UserID = rdr["UserID"].ToString();
+                        rsvp.DidAttend = rdr["Did_Attend"].ToString() == "0"; // Records 0 in database if the person attended otherwise records 1
+                        // rsvp.DidAttend will be true if 0 is returned from database otherwise will be false
+                    }
+                    // Close database connection
+                    con.Close();
+                    _logger.LogInformation("Database connection closed.\n");
+                }
+                return rsvp;
+            }
+            catch (Exception ex)
+            {
+                //Send errors to Logs.txt
+                _logger.LogError(ex, "Something went wrong in RSVPRepo's GetSingleRSVPByUserIDAsync method.\n");
+                return null;
+            }
+        }
+
+        public async Task<RSVP> GetSingleRSVPByUserIDAndDateForAsync(string userID, DateTime dateFor)
+        {
+            if (userID == string.Empty)
+            {
+                _logger.LogError($"Invalid parameter supplied to RSVPRepo's GetSingleRSVPByUserIDAndDateForAsync. Parameter Value: {userID}\t {dateFor}\n");
+                return null;
+            }
+            _logger.LogInformation($"Getting RSVP with user id: {userID} and date: {dateFor.Date}\n");
+            try
+            {
+                // Create empty rsvp object
+
+                var rsvp = new RSVP();
+
+                using (SqlConnection con = new SqlConnection(connectionString))
+                {
+                    // Retrieve single rsvp using a stored procedure created in the database
+                    SqlCommand cmd = new SqlCommand("dbo.spGetSingleRSVPByUserIdAndDateFor", con);
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@UserID", SqlDbType.NVarChar).Value = userID;
+                    cmd.Parameters.Add("@Date_For", SqlDbType.DateTime).Value = dateFor.Date;
+
+                    // Open database connection
+                    await con.OpenAsync();
+                    _logger.LogInformation("Database connection opened...............\n");
+                    SqlDataReader rdr = await cmd.ExecuteReaderAsync();
+                    _logger.LogInformation("Reading from database...............\n");
+
+                    while (rdr.Read())
+                    {
+                        // initialize rsvp object with data retrieved from database
+                        rsvp.RsvpID = Convert.ToInt16(rdr["ID"]);
+                        rsvp.DateFor = Convert.ToDateTime(rdr["Date_For"]);
+                        rsvp.UserID = rdr["UserID"].ToString();
+                        rsvp.DidAttend = rdr["Did_Attend"].ToString() == "0"; // Records 0 in database if the person attended otherwise records 1
+                        // rsvp.DidAttend will be true if 0 is returned from database otherwise will be false
+                    }
+                    // Close database connection
+                    con.Close();
+                    _logger.LogInformation("Database connection closed.\n");
+                }
+                return rsvp;
+            }
+            catch (Exception ex)
+            {
+                //Send errors to Logs.txt
+                _logger.LogError(ex, "Something went wrong in RSVPRepo's GetSingleRSVPByUserIDAndDateForAsync method.\n");
+                return null;
+            }
+        }
+
+
         public async Task<IEnumerable<RSVP>> GetRSVPsByDateAsync(DateTime dateFor)
         {
             // This method retrieves RSVPs from database according to the
@@ -136,7 +238,7 @@ namespace Inspiration_International.Repositories
                 return null;
             }
 
-            _logger.LogInformation($"Getting RSVPs with date: {dateFor}.\n");
+            _logger.LogInformation($"Getting RSVPs with date: {dateFor}..................\n");
 
             try
             {
@@ -163,8 +265,7 @@ namespace Inspiration_International.Repositories
                         var rsvp = new RSVP();
                         rsvp.RsvpID = Convert.ToInt16(rdr["ID"]);
                         rsvp.DateFor = Convert.ToDateTime(rdr["Date_For"]);
-                        rsvp.Contact = rdr["Contact"].ToString();
-                        rsvp.Name = rdr["_Name"].ToString();
+                        rsvp.UserID = rdr["UserID"].ToString();
                         rsvp.DidAttend = rdr["Did_Attend"].ToString() == "0"; // Records 0 in database if the person attended otherwise records 1
                         // rsvp.DidAttend will be true if 0 is returned from database otherwise will be false
 
@@ -184,7 +285,7 @@ namespace Inspiration_International.Repositories
                 return null;
             }
         }
-        public async Task<RSVP> UpdateRSVPAsync(int rsvpID, DateTime dateFor, string contact, string name, int didAttend)
+        public async Task<RSVP> UpdateRSVPAsync(int rsvpID, DateTime dateFor, string userID, int didAttend)
         {
 
             // Throws nullReferenceException if parameter rsvpID has an invalid value
@@ -205,8 +306,7 @@ namespace Inspiration_International.Repositories
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Add("@ID", SqlDbType.Int).Value = rsvpID;
                     cmd.Parameters.Add("@Date_For", SqlDbType.DateTime).Value = dateFor;
-                    cmd.Parameters.Add("@Contact", SqlDbType.NVarChar).Value = contact;
-                    cmd.Parameters.Add("@_Name", SqlDbType.NVarChar).Value = name;
+                    cmd.Parameters.Add("@UserID", SqlDbType.NVarChar).Value = userID;
                     cmd.Parameters.Add("@Did_Attend", SqlDbType.NVarChar).Value = didAttend;
 
                     // Open database connection
@@ -238,7 +338,7 @@ namespace Inspiration_International.Repositories
             _logger.LogInformation($"Deleting RSVP {rsvpID}.\n");
             try
             {
-                int result;
+                int cmdresult;
                 // Connect to the database
                 using (SqlConnection con = new SqlConnection(connectionString))
                 {
@@ -251,14 +351,14 @@ namespace Inspiration_International.Repositories
                     await con.OpenAsync();
                     _logger.LogInformation("Database connection opened...............\n");
                     // Execute command
-                    result = await cmd.ExecuteNonQueryAsync();
-                    _logger.LogInformation($"Command Executed.\t{result} rows affected.\n");
+                    cmdresult = await cmd.ExecuteNonQueryAsync();
+                    _logger.LogInformation($"Command Executed.\t{cmdresult} rows affected.\n");
                     // Close database connection
                     con.Close();
                     _logger.LogInformation("Database connection closed.\n");
                 }
 
-                return result == 0 ? 1 : 0; //Returns 0 if successful    
+                return cmdresult == 0 ? 1 : 0; //Returns 0 if successful    
             }
             catch (Exception ex)
             {
@@ -267,7 +367,7 @@ namespace Inspiration_International.Repositories
                 return 1;
             }
         }
-        public async Task<int> SumbitRSVPAsync(DateTime dateFor, string contact, string name, int didAttend)
+        public async Task<int> SubmitRSVPAsync(DateTime dateFor, string userID, int didAttend)
         {
 
             // throws an exception if parameter (dateFor) is null
@@ -278,7 +378,7 @@ namespace Inspiration_International.Repositories
             _logger.LogInformation("Submitting RSVP...................\n");
             try
             {
-                int result;
+                int cmdresult;
 
                 // Connect to the database
                 using (SqlConnection con = new SqlConnection(connectionString))
@@ -287,28 +387,84 @@ namespace Inspiration_International.Repositories
                     SqlCommand cmd = new SqlCommand("dbo.spSubmitRSVP", con);
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Add("@Date_For", SqlDbType.DateTime).Value = dateFor;
-                    cmd.Parameters.Add("@Contact", SqlDbType.NVarChar).Value = contact;
-                    cmd.Parameters.Add("@_Name", SqlDbType.NVarChar).Value = name;
+                    cmd.Parameters.Add("@UserID", SqlDbType.NVarChar).Value = userID;
                     cmd.Parameters.Add("@Did_Attend", SqlDbType.NVarChar).Value = didAttend;
 
                     // Open database connection
                     await con.OpenAsync();
                     _logger.LogInformation("Database connection opened...............\n");
                     // Execute command
-                    result = cmd.ExecuteNonQuery();
-                    _logger.LogInformation($"Command executed!\t{result} rows affected.");
+                    cmdresult = cmd.ExecuteNonQuery();
+                    _logger.LogInformation($"Command executed!\t{cmdresult} rows affected.");
                     // Close database connection
                     con.Close();
                     _logger.LogInformation("Database connection closed.\n");
                 }
 
-                return result == 0 ? 1 : 0; // Returns 0 if successful.
+                return cmdresult == 0 ? 1 : 0; // Returns 0 if successful.
             }
             catch (Exception ex)
             {
                 //Send errors to logFile.txt
                 _logger.LogError(ex, "Something went wrong in RSVPRepo's SubmitRSVPAsync method.");
                 return 1;
+            }
+        }
+
+        public async Task<IEnumerable<(short, string, string)>> GetAllRSVPWithTheirContacts(DateTime dateFor)
+        {
+            // This method retrieves the contacts of those who RSVPd from database  
+            // It takes the date of the class as its parameter.
+            if (dateFor == null)
+            {
+                _logger.LogError($"Invalid parameter supplied to rsvpRepo's GetAllRSVPWithTheirContacts Parameter Value: {dateFor}");
+                return null;
+            }
+
+            _logger.LogInformation($"Getting RSVPs with date: {dateFor}............\n");
+
+            try
+            {
+                // Create article object
+
+                var RSVPS = new List<(short didAttend, string email, string phoneNumber)>();
+
+                using (SqlConnection con = new SqlConnection(connectionString))
+                {
+                    // Retrieve single article using a stored procedure created in the database
+                    SqlCommand cmd = new SqlCommand("dbo.spGetAllRSVPWithTheirContacts", con);
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@date_For", SqlDbType.DateTime).Value = dateFor;
+
+                    // Open database connection
+                    await con.OpenAsync();
+                    _logger.LogInformation("Database connection opened...............\n");
+                    SqlDataReader rdr = await cmd.ExecuteReaderAsync();
+                    _logger.LogInformation("Reading from database...............\n");
+
+                    while (rdr.Read())
+                    {
+                        // initialize article object with data retrieved from database
+
+                        var didAttend = Convert.ToInt16(rdr["Did_Attend"]);
+                        var email = rdr["Email"].ToString();
+                        var phoneNumber = rdr["PhoneNumber"].ToString();
+
+                        var contactDetails = (didAttend, email, phoneNumber);
+                        RSVPS.Add(contactDetails);
+                    }
+
+                    // Close database connection
+                    con.Close();
+                    _logger.LogInformation("Database connection closed.\n");
+                }
+                return RSVPS;
+            }
+            catch (Exception ex)
+            {
+                //Send errors to Logs.txt
+                _logger.LogError(ex, "Something went wrong in RSVPRepo's GetAllRSVPWithTheirContacts method.");
+                return null;
             }
         }
     }

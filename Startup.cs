@@ -23,6 +23,10 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Inspiration_International.Services;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using System.Security.Claims;
+using Quartz;
+using Quartz.Impl;
+using Quartz.Spi;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Inspiration_International
 {
@@ -41,6 +45,7 @@ namespace Inspiration_International
         // This method gets called by the runtime. Use this method to add services to the containers.
         public void ConfigureServices(IServiceCollection services)
         {
+            ConfigureQuartzJobsIoc(services);
 
             services.AddDbContext<MyApplicationDbContext>(options =>
                 options.UseSqlServer(
@@ -53,11 +58,12 @@ namespace Inspiration_International
                 .AddDefaultTokenProviders();
 
             services.AddTransient<IEmailSender, EmailSender>();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             services.Configure<CookiePolicyOptions>(options =>
                 {
                     // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-                    options.CheckConsentNeeded = context => true;
+                    options.CheckConsentNeeded = context => false;
                     options.MinimumSameSitePolicy = SameSiteMode.None;
                     options.HttpOnly = HttpOnlyPolicy.None;
                     options.Secure = _enviroment.IsDevelopment() ?
@@ -122,7 +128,7 @@ namespace Inspiration_International
                 {
                     // Cookie settings
                     options.Cookie.HttpOnly = true;
-                    options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+                    options.ExpireTimeSpan = TimeSpan.FromDays(30);
 
                     options.LoginPath = "/Identity/Account/Login";
                     options.AccessDeniedPath = "/Identity/AccessDenied";
@@ -134,11 +140,22 @@ namespace Inspiration_International
             services.AddTransient<ICommentsRepo, CommentsRepo>();
 
 
+            services.AddDistributedMemoryCache();
+
+            services.AddSession(options =>
+            {
+                // Set a short timeout for easy testing.
+                options.IdleTimeout = TimeSpan.FromMinutes(20);
+                options.Cookie.HttpOnly = true;
+                // Make the session cookie essential
+                options.Cookie.IsEssential = true;
+            });
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime lifetime)
         {
             if (env.IsDevelopment())
             {
@@ -155,12 +172,42 @@ namespace Inspiration_International
             // add nlog.config file
             env.ConfigureNLog("nlog.config");
 
+            StartQuartzJobs(app, lifetime);
+
+            // var services = new ServiceCollection();
+            // var container = services.BuildServiceProvider();
+            // var jobFactory = new IntegrationJobFactory(container);
+            // // construct a scheduler factory
+            // ISchedulerFactory schedFact = new StdSchedulerFactory();
+
+            // // get a scheduler
+            // IScheduler sched = schedFact.GetScheduler().GetAwaiter().GetResult();
+            // sched.JobFactory = jobFactory;
+            // sched.Start();
+
+            // var job = JobBuilder.Create<MyEmailDispatcher>()
+            // .WithIdentity("myEmailDispatcher", "sendEmailGroup")
+            // .Build();
+
+            // var trigger = TriggerBuilder.Create()
+            // .WithIdentity("emailDispatcherTrigger", "sendEmailGroup")
+            // .StartNow()
+            // .WithSimpleSchedule(x => x
+            // .WithIntervalInMinutes(10)
+            // .RepeatForever())    //CronScheduleBuilder.WeeklyOnDayAndHourAndMinute(DayOfWeek.Saturday, 23, 50)
+            //                      //.WithMisfireHandlingInstructionFireAndProceed())
+            // .Build();
+
+
+            // sched.ScheduleJob(job, trigger);
+
+
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
-
             app.UseAuthentication();
+            app.UseSession();
 
             app.UseMvc(routes =>
             {
@@ -169,17 +216,70 @@ namespace Inspiration_International
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
 
-            // #if DEBUG
-            //             try
-            //             {
-            //                 File.WriteAllText("browsersync-update.txt", DateTime.Now.ToString());
-            //             }
-            //             catch
-            //             {
-            //                 // ignore
-            //             }
-            // #endif
 
+            #if DEBUG
+                        try
+                        {
+                            File.WriteAllText("browsersync-update.txt", DateTime.Now.ToString());
+                        }
+                        catch
+                        {
+                            // ignore
+                        }
+            #endif
+
+        }
+
+        private void ConfigureQuartz(IServiceCollection services, params Type[] jobs)
+        {
+            services.AddSingleton<IJobFactory, IntegrationJobFactory>();
+            services.Add(jobs.Select(jobType => new ServiceDescriptor(jobType, jobType, ServiceLifetime.Singleton)));
+
+            services.AddSingleton(provider =>
+            {
+                var schedulerFactory = new StdSchedulerFactory();
+                var scheduler = schedulerFactory.GetScheduler().Result;
+                scheduler.JobFactory = provider.GetService<IJobFactory>();
+                scheduler.Start();
+                return scheduler;
+            });
+        }
+
+        protected void ConfigureQuartzJobsIoc(IServiceCollection services)
+        {
+            ConfigureQuartz(services, typeof(MyEmailDispatcher)); //* other jobs come here */
+        }
+
+        protected void StartQuartzJobs(IApplicationBuilder app, IApplicationLifetime lifetime)
+        {
+            var scheduler = app.ApplicationServices.GetService<IScheduler>();
+            //TODO: use some config
+            QuartzServicesUtilities.StartJob<MyEmailDispatcher>(scheduler, "TimeSpan.FromSeconds(60)");
+
+            lifetime.ApplicationStarted.Register(() => scheduler.Start());
+            lifetime.ApplicationStopping.Register(() => scheduler.Shutdown());
+        }
+
+        public static class QuartzServicesUtilities
+        {
+            public static void StartJob<TJob>(IScheduler scheduler, string cron)
+                 where TJob : IJob
+            {
+                var jobName = typeof(TJob).FullName;
+
+                var job = JobBuilder.Create<TJob>()
+                    .WithIdentity(jobName)
+                    .Build();
+
+                var trigger = TriggerBuilder.Create()
+                    .WithSchedule(CronScheduleBuilder.WeeklyOnDayAndHourAndMinute(DayOfWeek.Saturday, 15, 55)
+                                    .WithMisfireHandlingInstructionFireAndProceed()
+                    .InTimeZone(TimeZoneInfo.FindSystemTimeZoneById("Africa/Lagos")))
+                    .ForJob(job)
+                    .Build();
+
+                scheduler.ScheduleJob(job, trigger);
+            }
         }
     }
 }

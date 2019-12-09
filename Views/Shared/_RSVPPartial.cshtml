@@ -1,51 +1,65 @@
 @model RSVPViewModel
+@using Microsoft.AspNetCore.Http
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+
+<script>
+    if(!sessionStorage.getItem("_dateOfNextClass"))
+    {
+       sessionStorage.setItem("_dateOfNextClass", @Html.Raw( @HttpContextAccessor.HttpContext.Session.GetString("_dateOfNextClass").ToString() )); 
+    }
+</script>
+
 
 <aside>
     <div class="rsvp-cover">
+        <!-- This div element and its contents are meant for the preloader functionality only. -->
+        <div id="preloader" class="lds-css ng-scope">
+            <div style="width:100%;height:100%" class="lds-rolling">
+               <div></div>
+            </div>
+        </div>
+
+        <div id="will-you-rsvp" style="display: none    ;">
             <p>
-                <span>Hey @Model.FirstName </span>
+                <span class="salute">Hello,</span>
                 <br>
-                Join us in our next class on Sunday 25 August 2019?
+                <span class="showNextClass">Join us in our next class </span>
                 <br>
                 RSVP Here.
+                <button id="rsvp-ok">Okay</button>
             </p>
-            <div>
-                @if(User.Identity.IsAuthenticated)
-                {
-                <button class="rsvp-ok" asp-action="Index" asp-controller="RSVP">Okay</button>
-                }
-                else
-                {
-                <a class="rsvp-ok" asp-action="Index" asp-controller="RSVP">what</a>
-                }
-            </div>
+        </div>
+
+        <div id="get-phoneNumber" style="display: none;">
+                <fieldset>
+                    <legend align="center">RSVP</legend>
+                    <p>Please submit your phone number so we can contact you.</p>
+                    <form method="Post" id="phoneNumber-form">
+                        <div>
+                            <label for="PhoneNumber">Phone number</label>
+                            <input asp-for="PhoneNumber" class="text-input" required="" id="phoneNumber-input" type="tel" placeholder="Your number...." >
+                            <span asp-validation-for="PhoneNumber"></span>
+                            <button id="submit-no" type="submit" class="btn">Submit</button>
+                            <button id="decline-submit" class="btn">Decline</button>
+                        </div> 
+                    </form> 
+                </fieldset>
+        </div>
+
+
+        <div id="rsvp-done" style="display: none;">
+                <p>
+                    <span class="salute">Hello,</span>
+                    <br>
+                    <span class="showNextClass"> We are expecting you in the class</span>
+                </p>
+        </div>
     </div>
-
-        <div class="rsvp-input-container">
-            <fieldset >
-        <legend align="center">RSVP</legend>
-
-        @if(Model.PhoneNumber == null)
-        {
-            <p>Please submit your phone number so we can contact you.</p>
-            <form method="Post" id="rsvp-form">
-                <div>
-                <label for="PhoneNumber">Phone number</label>
-                <input asp-for="PhoneNumber" class="text-input" id="text-input-1" type="text" >
-                <span asp-validation-for="PhoneNumber"></span>
-                <button id="submit-rsvp" type="submit" class="btn">Submit</button>
-                </div> 
-            </form> 
-        }
-        else
-        {
-            <p>Thanks for the RSVP Mr. @Model.FirstName. <br> See you on Sunday.</p>
-        }
-        <fieldset>
-    </div>
-
 </aside>
 
 
 
 
+@section Script{
+    <partial name="_ValidationScriptPartial"/>
+}

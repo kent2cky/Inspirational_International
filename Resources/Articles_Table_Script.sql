@@ -450,17 +450,17 @@
 -- END
 
 
-CREATE PROCEDURE spGetArticlesByDatePosted
-    (
-    @Date_Posted [DATETIME]
-)
-AS
-BEGIN
-    SELECT *
-    FROM Articles
-    WHERE cast
-([Date_Posted] as date ) = @date_Posted
-END
+-- CREATE PROCEDURE spGetArticlesByDatePosted
+--     (
+--     @Date_Posted [DATETIME]
+-- )
+-- AS
+-- BEGIN
+--     SELECT *
+--     FROM Articles
+--     WHERE cast
+-- ([Date_Posted] as date ) = @date_Posted
+-- END
 
 
 --- Create a stored procedure to retrieve a single Article
