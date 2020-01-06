@@ -16,13 +16,11 @@ namespace Inspiration_International.Areas.Identity.Pages.Account.Manage
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ILogger<ChangePasswordModel> _logger;
-        private IEmailSender emailSender;
 
         public ChangePasswordModel(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
-            ILogger<ChangePasswordModel> logger,
-            IEmailSender emailSender
+            ILogger<ChangePasswordModel> logger
             )
         {
             _userManager = userManager;

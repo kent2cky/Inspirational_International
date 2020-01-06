@@ -1,17 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.Extensions.Configuration;
 using Inspiration_International.Repositories;
 using Inspiration_International.Models;
 using Microsoft.Extensions.Logging;
-using System.IO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Inspiration_International.Identity;
@@ -38,7 +31,7 @@ namespace Inspiration_International.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
             return RedirectToAction("Index", "Home");
         }

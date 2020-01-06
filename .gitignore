@@ -5,8 +5,6 @@ Logs.txt
 *.db
 *.dll
 obj/*
-<<<<<<< HEAD
 *.pdb
-=======
-
->>>>>>> master
+***.pdb
+ngrok

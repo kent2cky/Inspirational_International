@@ -48,7 +48,7 @@ namespace Inspiration_International.Services
 
                 var contacts = await _rsvpRepo.GetAllRSVPWithTheirContacts(Convert.ToDateTime("2019-10-13"));
                 var subject = new StringBuilder($"RSVPs for tomorrows class {DateTime.Now.Next(DayOfWeek.Sunday).ToString().Split(" ")[0]}");
-                var message = new StringBuilder("<p>These are the contacts of the people that signed up for tomorrows class:</p>");
+                var message = new StringBuilder("<p>These are the contacts of the people that signed up for tomorrow's class:</p>");
                 message.AppendLine("<table style=\"background: beige; \"><tr style=\"background: #098ee7e6\"><th>Email</th><th>Number</th></tr>");
                 foreach (var contact in contacts)
                 {

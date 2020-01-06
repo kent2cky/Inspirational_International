@@ -15,6 +15,7 @@ namespace Inspiration_International.Services
 
         public IJob NewJob(TriggerFiredBundle bundle, IScheduler scheduler)
         {
+            Console.WriteLine("Inside JobFactory");
             var jobDetail = bundle.JobDetail;
 
             var job = _service.GetService(jobDetail.JobType) as IJob;

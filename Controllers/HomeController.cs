@@ -2,24 +2,17 @@
 // using Microsoft.AspNetCore.Identity;
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Configuration;
 using Inspiration_International.Repositories;
 using Inspiration_International.Models;
 using Microsoft.AspNetCore.Identity;
 using Inspiration_International.Identity;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Inspiration_International.Helpers;
 using Microsoft.Extensions.Logging;
-using System.Text;
 using System.Runtime.InteropServices;
 using Newtonsoft.Json;
 
@@ -46,38 +39,19 @@ namespace Inspiration_International.Controllers
             _logger = logger;
         }
 
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
             try
             {
-
-                // var v = await _commentsRepo
-                // // .UpdateCommentAsync(3, Convert.ToDateTime("2019-08-16T18:51:26.000"),
-                // // "A great article Sir. I need more.", "Coach Victor", 199);
-                // //.DeleteRSVPAsync(-1);
-                // .SubmitCommentAsync(
-                //     DateTime.Now,
-                //     "08035401681",
-                //     "Coach Oris",
-                //     7
-                // );
-                // Console.WriteLine($"{v}"); //.CommentBody}\n");
-                // .GetSingleRSVPByIDAsync(1);
-                // Console.WriteLine($"{v.DidAttend}, {v.Name}, {v.DateFor}");
-                // .GetAllRSVPsAsync();
-
-                if (User.IsInRole("Admin"))
-                {
-                    Console.WriteLine("User is an admin!");
-                }
-
-
-
+                // if (User.IsInRole("Admin"))
+                // {
+                //     Console.WriteLine("User is an admin!");
+                // }
 
                 SetDateOfNextClassToSession();
 
-                bool isWindows = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
-                bool isLinux = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
+                // bool isWindows = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+                // bool isLinux = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
 
                 // foreach (var TimeZone in TimeZoneInfo.GetSystemTimeZones())
                 // {
@@ -93,7 +67,7 @@ namespace Inspiration_International.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.LogError(ex.ToString());
                 return View();
             }
 
@@ -131,7 +105,6 @@ namespace Inspiration_International.Controllers
                     viewModel.PhoneNumber = user.PhoneNumber != null ? "true" : "false";
                     viewModel.FirstName = user.FullName.Split(" ")[0];
                 }
-                Console.WriteLine("\n\n\n\n\n\n\n\n" + viewModel + "\n\n\n\n\n\n\n\n\n");
                 return Json(viewModel);
             }
             _logger.LogError("Error sending viewModel");
@@ -140,7 +113,7 @@ namespace Inspiration_International.Controllers
 
         [HttpPost]
         // recieve error reports from frontend and log them. 
-        public async Task<IActionResult> sendErrorReports([FromBody] FrontEndErrorReportModel error)
+        public IActionResult sendErrorReports([FromBody] FrontEndErrorReportModel error)
         {
             if (ModelState.IsValid)
             {
@@ -163,49 +136,49 @@ namespace Inspiration_International.Controllers
         }
 
 
-        public async Task<IActionResult> About()
+        public IActionResult About()
         {
             SetDateOfNextClassToSession();
             return View();
         }
 
-        public async Task<IActionResult> GetInspired()
+        public IActionResult GetInspired()
         {
             SetDateOfNextClassToSession();
             return View();
         }
 
-        public async Task<IActionResult> ProfessionalCourses()
+        public IActionResult ProfessionalCourses()
         {
             SetDateOfNextClassToSession();
             return View();
         }
 
-        public async Task<IActionResult> AcquireSkill()
+        public IActionResult AcquireSkill()
         {
             SetDateOfNextClassToSession();
             return View();
         }
 
-        public async Task<IActionResult> GetProfessionalCV()
+        public ActionResult GetProfessionalCV()
         {
             SetDateOfNextClassToSession();
             return View();
         }
 
-        public async Task<IActionResult> HRM()
+        public IActionResult HRM()
         {
             SetDateOfNextClassToSession();
             return View();
         }
 
-        public async Task<IActionResult> ProjectManagement()
+        public IActionResult ProjectManagement()
         {
             SetDateOfNextClassToSession();
             return View();
         }
 
-        public async Task<IActionResult> CustServiceMgt()
+        public IActionResult CustServiceMgt()
         {
             SetDateOfNextClassToSession();
             return View();
@@ -218,7 +191,6 @@ namespace Inspiration_International.Controllers
             if (HttpContext.Session.GetString("_dateOfNextClass") == null)
             {
                 var nextClass = JsonConvert.SerializeObject(DateTime.UtcNow.Next(DayOfWeek.Sunday)).ToString();
-                Console.WriteLine($"\n\n\n\n{nextClass.ToString()} dfjasl;dfjs \n\n\n\n");
                 HttpContext.Session.SetString("_dateOfNextClass", nextClass);
             }
         }
