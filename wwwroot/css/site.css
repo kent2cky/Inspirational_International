@@ -216,9 +216,9 @@ aside {
 .rsvp-cover {
   display: flex;
   justify-content: center;
-  background: #098ee7ef;
+  background: #098ee7;
   color: white;
-  padding: 50px 0 60px 0;
+  padding: 50px 4px 60px 4px;
   text-align: center;
   width: 100vw;
 }

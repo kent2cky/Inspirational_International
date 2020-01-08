@@ -27,6 +27,7 @@ using Quartz;
 using Quartz.Impl;
 using Quartz.Spi;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.AspNetCore.HttpOverrides;
 
 namespace Inspiration_International
 {
@@ -124,6 +125,18 @@ namespace Inspiration_International
                     options.User.RequireUniqueEmail = true;
                 });
 
+            if (string.Equals("true", _configuration["ForwardedHeaders_Enabled"], StringComparison.OrdinalIgnoreCase))
+            {
+                services.Configure<ForwardedHeadersOptions>(options =>
+                {
+                    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+                    // Only loopback proxies are allowed by default. Clear that restriction because forwarders are
+                    // being enabled by explicit configuration.
+                    options.KnownNetworks.Clear();
+                    options.KnownProxies.Clear();
+                });
+            }
+
             services.ConfigureApplicationCookie(options =>
                 {
                     // Cookie settings
@@ -173,6 +186,7 @@ namespace Inspiration_International
             env.ConfigureNLog("nlog.config");
 
             StartQuartzJobs(app, lifetime);
+            app.UseForwardedHeaders();
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
