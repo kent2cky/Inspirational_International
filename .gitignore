@@ -8,3 +8,4 @@ obj/*
 *.pdb
 ***.pdb
 ngrok
+node_modules/*
