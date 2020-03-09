@@ -235,10 +235,33 @@ function display(model) {
 $(".rsvp-cover").ready(function () {
   // Get view model from the browser local storage or session storage
   var viewModel = getViewModel();
-
+var dateOfNextClass = sessionStorage.getItem("_dateOfNextClass");
+// Replace the time part so you can effectively compare both dates
+  var splitModelDate = dateOfNextClass.split("T")[0];
+  var splitLocalDate = new Date().toISOString().split("T")[0];
+  console.log(dateOfNextClass);
+  
+  var dateOfClass = new Date(splitModelDate + "T00:00:00Z").toLocaleDateString(
+    undefined, // undefined allows the browser to set local timezone and calculate appropriate offsets
+    {
+      day: "numeric",
+      month: "short",
+      year: "numeric"
+    }
+  );
+  var today = new Date(splitLocalDate + "T00:00:00Z").toLocaleDateString(
+    undefined, // undefined allows the browser to set local timezone and calculate appropriate offsets
+    {
+      day: "numeric",
+      month: "short",
+      year: "numeric"
+    }
+  );
+  
+  
   // If nothing is stored in session or local storage then request the data from server
   // and save them in the session or local storage
-  if (viewModel === null) {
+  if (!viewModel || dateOfClass < today) {
     requestViewModelFromServer(function (response) {
       // Set response to local storage
       if (setLocalStorage(response) !== 0) {
@@ -252,8 +275,8 @@ $(".rsvp-cover").ready(function () {
 
   //Dynamically append users firstName
   appendUsersFirstName(viewModel._FN);
+  
   // Dynamically append date of next class.
-  var dateOfNextClass = sessionStorage.getItem("_dateOfNextClass");
   appendDateOfNextClass(dateOfNextClass);
   // Display appropriate rsvp view
   display(viewModel);
@@ -433,4 +456,50 @@ function sendUserPhoneNumberToServer(phoneNumber, callback) {
     callback(1);
     console.error("Error from submitButton" + error);
   }
+}
+
+
+// the slideshow functionality
+
+// function showSlides(n) {
+//   var i;
+//   var slides = document.getElementsByClassName("mySlides");
+//   var dots = document.getElementsByClassName("dot");
+//   if (n > slides.length) {slideIndex = 1}
+//   if (n < 1) {slideIndex = slides.length}
+//   for (i = 0; i < slides.length; i++) {
+//       slides[i].style.display = "none";
+//   }
+//   for (i = 0; i < dots.length; i++) {
+//       dots[i].className = dots[i].className.replace(" active", "");
+//   }
+//   slides[slideIndex-1].style.display = "block";
+//   dots[slideIndex-1].className += " active";
+// }
+
+var slideIndex = 0;
+
+// Next/previous controls
+function plusSlides(n) {
+  showSlides(slideIndex += n);
+}
+
+// Thumbnail image controls
+function currentSlide(n) {
+  showSlides(slideIndex = n);
+}
+
+showSlides();
+
+function showSlides() {
+  var i;
+  var slides = document.getElementsByClassName("mySlides");
+  console.log('this is the number of slides: ', slides);
+  for (i = 0; i < slides.length; i++) {
+    slides[i].style.display = "none";
+  }
+  slideIndex++;
+  if (slideIndex > slides.length) {slideIndex = 1}
+  slides[slideIndex-1].style.display = "block";
+  setTimeout(showSlides, 5000); // Change image every 5 seconds
 }

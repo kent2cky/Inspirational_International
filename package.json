@@ -1,0 +1,28 @@
+{
+  "name": "inspiration-international",
+  "version": "1.0.0",
+  "description": "A website for Inspiration International Abuja",
+  "main": "gulpfile.js",
+  "dependencies": {
+    "gulp": "^4.0.2",
+    "gulp-babel": "^8.0.0",
+    "gulp-debug": "^4.0.0",
+    "gulp-terser": "^1.2.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.8.4"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kent2cky/Inspirational_International.git"
+  },
+  "author": "kent2ckymaduka@gmail.com",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kent2cky/Inspirational_International/issues"
+  },
+  "homepage": "https://github.com/kent2cky/Inspirational_International#readme"
+}

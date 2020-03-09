@@ -17,9 +17,10 @@ header {
   width: 100%;
   display: flex;
   padding: 12px 0px 10px 0px;
-  background: white;
+  background: #fff;
   margin-bottom: 4px;
-  box-shadow: 5px 5px 6px #e6e0e0;
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+
 }
 
 * {
@@ -144,7 +145,6 @@ span.bold {
 */
 
 .main-container {
-  background: white;
   padding: 15px;
 }
 
@@ -154,6 +154,7 @@ span.bold {
   width: 100%;
   padding: 2px 0;
   display: inline-block;
+  margin-bottom: 12px;
 }
 
 .card {
@@ -163,8 +164,11 @@ span.bold {
   flex-flow: row wrap;
   text-align: center;
   line-height: 20px;
-  margin: 30px 7px 25px 6px;
+  margin: 0px 7px 10px 0px;
+  border-radius: 2px;
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
   justify-content: center;
+  padding: 0 16px;
 }
 
 .button {
@@ -190,10 +194,10 @@ input.submit:hover,
 
 [card-container] {
   display: flex;
-  width: inherit;
+  /* width: inherit; */
   flex-flow: column wrap;
   justify-content: center;
-  background: white;
+  /* background: white;  */
 }
 
 .card img {
@@ -216,7 +220,8 @@ aside {
 .rsvp-cover {
   display: flex;
   justify-content: center;
-  background: #098ee7;
+  background: url(../icons/gbbl.jpg);
+  background-size: cover;
   color: white;
   padding: 50px 4px 60px 4px;
   text-align: center;
@@ -288,26 +293,28 @@ input.submit {
   height: 100vh;
 }
 
-h1 {
+#greetings {
   margin: 0;
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
 }
 
 a {
   text-decoration: none;
-  color: blue;
+  color: #969696;
 }
 
 footer {
   display: inline-block;
-  background: #e7e3e3;
+  background: #333;
   bottom: 0;
-  width: 100%;
+  width: 100vw;
   white-space: normal;
   height: auto;
   line-height: 16px;
   /* Vertically center the text there */
   padding: 10px;
   z-index: 6000;
+  color: white;
 }
 
 footer .container {
@@ -393,6 +400,123 @@ label {
   display: block;
 }
 
+/* styling for portrait slider pictures */
+.sliderPixPort{
+  width: 70vw;
+  height: 33vh;
+}
+
+.sliderPixLands{
+  width: 83vw;
+  height: 27vh;
+  padding-top: 6vh;
+}
+
+.bg-white{
+  background: white;
+}
+
+
+/* styling for the slideshow functionality */
+
+* {box-sizing:border-box}
+
+/* Slideshow container */
+.slideshow-container {
+  max-width: 1000px;
+  position: relative;
+  margin: auto;
+}
+
+/* Hide the images by default */
+.mySlides {
+  display: none;
+  background: rgba(10, 10, 10, 0.853);
+  text-align: center;
+  height: 33vh;
+}
+
+/* Next & previous buttons */
+.prev, .next {
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  width: auto;
+  margin-top: -22px;
+  padding: 16px;
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
+  transition: 0.6s ease;
+  border-radius: 0 3px 3px 0;
+  user-select: none;
+}
+
+/* Position the "next button" to the right */
+.next {
+  right: 0;
+  border-radius: 3px 0 0 3px;
+}
+
+/* On hover, add a black background color with a little bit see-through */
+.prev:hover, .next:hover {
+  background-color: rgba(0,0,0,0.8);
+}
+
+/* Caption text */
+.text {
+  color: #f2f2f2;
+  font-size: 15px;
+  padding: 8px 12px;
+  position: absolute;
+  bottom: 8px;
+  width: 100%;
+  text-align: center;
+}
+
+/* Number text (1/3 etc) */
+.numbertext {
+  color: #f2f2f2;
+  font-size: 12px;
+  padding: 8px 12px;
+  position: absolute;
+  top: 0;
+}
+
+/* The dots/bullets/indicators */
+.dot {
+  cursor: pointer;
+  height: 15px;
+  width: 15px;
+  margin: 0 2px;
+  background-color: #bbb;
+  border-radius: 50%;
+  display: inline-block;
+  transition: background-color 0.6s ease;
+}
+
+.active, .dot:hover {
+  background-color: #717171;
+}
+
+/* Fading animation */
+.fade {
+  -webkit-animation-name: fade;
+  -webkit-animation-duration: 1.5s;
+  animation-name: fade;
+  animation-duration: 1.5s;
+}
+
+@-webkit-keyframes fade {
+  from {opacity: .4}
+  to {opacity: 1}
+}
+
+@keyframes fade {
+  from {opacity: .4}
+  to {opacity: 1}
+}
+
 /* Style overrides for tabs goes in here */
 @media screen and (min-width: 500px) {
   .nav-container {
@@ -403,13 +527,29 @@ label {
     color: #098ee7ef;
   }
 
-  [card-container] {
-    padding-top: 3em;
+  .mySlides {
+    height: 80vh;
   }
+
+  .sliderPixPort{
+    width: auto;
+    height: 80vh;
+  }
+  
+  .sliderPixLands{
+    width: auto;
+      height: auto;
+      padding-top: 20vh;
+  }
+  
+
+  /* [card-container] {
+    padding-top: 3em;
+  } */
 
   .card {
     line-height: 25px;
-  }
+    }
   .card p {
     max-width: 665px;
     display: block;
@@ -424,6 +564,18 @@ label {
   }
 }
 
+
+@media (orientation: landscape) {
+  .card {
+    padding: 0px 90px;
+    height: 90vh;
+}
+
+.sliderPixLands {
+  padding-top: 3vh;
+}
+}
+
 @media screen and (min-width: 820px) {
   body {
     font-size: 16px;
@@ -433,7 +585,6 @@ label {
     font-size: 18px;
     position: fixed;
     z-index: 1000;
-    box-shadow: 5px 5px 6px #e6e0e0;
   }
 
   main {
@@ -442,7 +593,6 @@ label {
     width: inherit;
     display: flex;
     flex-flow: row wrap;
-    background-color: #098ee7ef;
   }
 
   .main-container {
@@ -496,9 +646,10 @@ label {
   }
 
   .card {
-    width: 75vw;
+    max-width: 73vw;
     line-height: 25px;
     padding: 0px 153px;
+    height: 60vh;
   }
   .card p {
     max-width: 925px;
@@ -508,6 +659,22 @@ label {
     height: 30vw;
     width: auto;
   }
+
+  footer{
+    width: 74vw;
+  }
+
+  .sliderPixPort{
+    width: auto;
+    height: 80vh;
+  }
+  
+  .sliderPixLands{
+    width: auto;
+      height: auto;
+      padding-top: 20vh;
+  }
+  
 }
 
 /* Here lies the styles for the login page */

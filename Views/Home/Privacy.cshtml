@@ -1,7 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Privacy Policy for Inspiration International";
 }
-<div>
+<div class="main-container bg-white text-center">
     <h1>@ViewData["Title"]</h1>
 
     <p>At Inspiration International, accessible from inspirationinternational.com.ng, one of our main priorities is the privacy of our visitors. This Privacy Policy document contains types of information that is collected and recorded by Inspiration International Website and how we use it.</p>
@@ -45,10 +45,9 @@
     <h2>Consent</h2>
 
     <p>By using our website, you hereby consent to our Privacy Policy and agree to its Terms and Conditions.</p></p>
+
+    &nbsp;&nbsp;<a class="btn" asp-controller="Home" asp-action="Index">Go Back</a>
 </div>
-
-    <a class="btn" asp-controller="Home" asp-action="Index">Go Back</a>
-
 @section RSVP 
 {
     <partial name="_RSVPPartial"/>

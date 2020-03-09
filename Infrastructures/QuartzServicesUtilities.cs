@@ -15,7 +15,8 @@ public static class QuartzServicesUtilities
         var trigger = TriggerBuilder.Create()
             .WithSchedule(CronScheduleBuilder.WeeklyOnDayAndHourAndMinute(DayOfWeek.Sunday, 06, 30)
                             .WithMisfireHandlingInstructionFireAndProceed()
-            .InTimeZone(TimeZoneInfo.FindSystemTimeZoneById("Africa/Lagos")))
+            // .InTimeZone(TimeZoneInfo.FindSystemTimeZoneById("Africa/Lagos")))
+            .InTimeZone(TimeZoneInfo.FindSystemTimeZoneById("W. Central Africa Standard Time")))
             .ForJob(job)
             .Build();
 

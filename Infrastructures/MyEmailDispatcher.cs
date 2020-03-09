@@ -46,7 +46,7 @@ namespace Inspiration_International.Services
 
                 var dateFor = DateTime.Now.Next(DayOfWeek.Sunday); // Get date of next class
 
-                var contacts = await _rsvpRepo.GetAllRSVPWithTheirContacts(Convert.ToDateTime("2019-10-13"));
+                var contacts = await _rsvpRepo.GetAllRSVPWithTheirContacts(Convert.ToDateTime(dateFor));
                 var subject = new StringBuilder($"RSVPs for tomorrows class {DateTime.Now.Next(DayOfWeek.Sunday).ToString().Split(" ")[0]}");
                 var message = new StringBuilder("<p>These are the contacts of the people that signed up for tomorrow's class:</p>");
                 message.AppendLine("<table style=\"background: beige; \"><tr style=\"background: #098ee7e6\"><th>Email</th><th>Number</th></tr>");
@@ -56,6 +56,7 @@ namespace Inspiration_International.Services
                 }
                 message.Append("</table>");
                 await _emailSender.SendEmailAsync("kent2ckymaduka@gmail.com", subject.ToString(), message.ToString());
+                await _emailSender.SendEmailAsync("sundayadeoyeoris@gmail.com", subject.ToString(), message.ToString());
             }
             catch (Exception ex)
             {

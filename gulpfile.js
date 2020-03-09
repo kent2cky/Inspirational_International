@@ -17,11 +17,11 @@ gulp.task('processJS', gulp.series((done) => {
   gulp.src([
     'Scripts/js/*.js'
   ])
-    .pipe(debug())
-    .pipe(babel({
-      presets: ['@babel/preset-env']
-    }))
-    .pipe(terser())
+    // .pipe(debug())
+    // .pipe(babel({
+    //   presets: ['@babel/preset-env']
+    // }))
+    // .pipe(terser()) 
     .pipe(gulp.dest('wwwroot/js'))
   console.log("done running processJS");
   done();
