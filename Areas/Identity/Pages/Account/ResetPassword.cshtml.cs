@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 namespace Inspiration_International.Areas.Identity.Pages.Account
 {
     [AllowAnonymous]
+    [IgnoreAntiforgeryToken(Order = 1001)]
     public class ResetPasswordModel : PageModel
     {
         private readonly UserManager<ApplicationUser> _userManager;

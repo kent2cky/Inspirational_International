@@ -17,7 +17,7 @@ namespace Inspiration_International.Repositories
 
         public RSVPRepo(IConfiguration configuration, ILogger<RSVPRepo> logger)
         {
-            connectionString = configuration["Secrets:ConnectionString"];
+            connectionString = "Data Source=SQL5049.site4now.net;Initial Catalog=DB_A5614F_inspintdb;User Id=DB_A5614F_inspintdb_admin;Password=ken123nis;";// configuration["Secrets:ConnectionString"];
             _logger = logger;
         }
 

@@ -13,6 +13,7 @@ using Microsoft.Extensions.Logging;
 namespace Inspiration_International.Areas.Identity.Pages.Account
 {
     [AllowAnonymous]
+    [IgnoreAntiforgeryToken(Order = 1001)]
     public class LoginWith2faModel : PageModel
     {
         private readonly SignInManager<ApplicationUser> _signInManager;

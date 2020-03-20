@@ -49,8 +49,7 @@ namespace Inspiration_International
             ConfigureQuartzJobsIoc(services);
 
             services.AddDbContext<MyApplicationDbContext>(options =>
-                options.UseSqlServer(
-                    _configuration["Secrets:ConnectionString"]));
+                options.UseSqlServer("Data Source=SQL5049.site4now.net;Initial Catalog=DB_A5614F_inspintdb;User Id=DB_A5614F_inspintdb_admin;Password=ken123nis;"));
             services.AddIdentity<ApplicationUser, ApplicationRole>(config =>
             {
                 config.SignIn.RequireConfirmedEmail = true;
@@ -75,14 +74,14 @@ namespace Inspiration_International
             .AddFacebook("Facebook",
                 Facebookoptions =>
                 {
-                    Facebookoptions.AppId = _configuration["Secrets:Facebook:AppId"];
-                    Facebookoptions.AppSecret = _configuration["Secrets:Facebook:AppSecret"];
+                    Facebookoptions.AppId = "378043272850469"; //_configuration["Secrets:Facebook:AppId"];
+                    Facebookoptions.AppSecret =  "ebb513f154e5e8352e9841eaf6383282"; //_configuration["Secrets:Facebook:AppSecret"];
                 }
             )
             .AddGoogle(options =>
             {
-                options.ClientId = _configuration["Secrets:Google:ClientID"];
-                options.ClientSecret = _configuration["Secrets:Google:ClientSecret"];
+                options.ClientId = "105963320750-cbb3s3nptm86skd9efcfjhm5ph2b7koc.apps.googleusercontent.com"; //_configuration["Secrets:Google:ClientID"];
+                options.ClientSecret = "6KmDBkw0f0-HB9Wk2pBCLIKy"; //_configuration["Secrets:Google:ClientSecret"];
                 options.ClaimActions.MapJsonKey("urn:google:picture", "picture", "url");
                 options.ClaimActions.MapJsonKey("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name", "Fullname", "string");
                 options.SaveTokens = true;
@@ -244,7 +243,5 @@ namespace Inspiration_International
             lifetime.ApplicationStarted.Register(() => scheduler.Start());
             lifetime.ApplicationStopping.Register(() => scheduler.Shutdown());
         }
-
-
     }
 }

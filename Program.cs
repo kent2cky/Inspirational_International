@@ -27,7 +27,7 @@ namespace Inspiration_International
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
                 .UseNLog()
-                .UseIISIntegration()
-                .UseKestrel();
+                .UseIISIntegration();
+                // .UseKestrel();
     }
 }

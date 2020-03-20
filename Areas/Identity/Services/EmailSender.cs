@@ -19,7 +19,7 @@ namespace Inspiration_International.Services
         private ILogger _logger { get; set; }
         public async Task SendEmailAsync(string email, string subject, string message)
         {
-            var apiKey = _configuration["Secrets:SendGridApiKey"] ?? "Not found!!";
+            var apiKey = "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";//_configuration["Secrets:SendGridApiKey"] ?? "Not found!!";
             Console.WriteLine(apiKey);
             await Execute(apiKey, email, subject, message);
         }
